@@ -17,7 +17,7 @@ export async function verifyEmailLogic(c: Context) {
 		.where(eq(table.verification.userEmail, valid.data.email));
 
 	if (!verification) {
-		return c.json({ message: "Invalid email." }, 400);
+		return c.json({ message: "Invalid data." }, 400);
 	}
 
 	const tokenExpired = Date.now() >= verification.expiresAt.getTime();

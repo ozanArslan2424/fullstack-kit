@@ -26,6 +26,11 @@ export const app = {
 			path: "/api/auth/verify-email",
 			schema: schemas.verifyEmail,
 		},
+		verifyEmailResend: {
+			method: "POST",
+			path: "/api/auth/verify-email-resend",
+			schema: schemas.verifyEmailResend,
+		},
 		forgotPassword: {
 			method: "POST",
 			path: "/api/auth/forgot-password",

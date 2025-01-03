@@ -3,7 +3,7 @@ import type { Context } from "hono";
 import { db, table } from "@/server/db";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { env } from "@/server/lib/env";
+import { env } from "@/server/env";
 import { ONE_DAY } from "@/server/routes/auth/constants";
 import { forgotPasswordSchema } from "@/server/routes/auth/schemas";
 

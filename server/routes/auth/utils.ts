@@ -6,7 +6,7 @@ import { db, table } from "@/server/db";
 import type { SessionSelect } from "@/server/db/types";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { env } from "@/server/lib/env";
+import { env } from "@/server/env";
 import { ONE_DAY } from "@/server/routes/auth/constants";
 
 export function generateSessionToken() {

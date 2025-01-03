@@ -7,8 +7,8 @@ import { serveEmojiFavicon } from "@/server/middleware/emoji-favicon";
 import { notFound } from "@/server/middleware/not-found";
 import { onError } from "@/server/middleware/on-error";
 import { authRoutes } from "@/server/routes/auth";
+import { log } from "@/server/utils";
 import "@/watch-routes";
-import { log } from "./lib/log";
 
 export interface HonoType {
 	Variables: {
@@ -32,8 +32,8 @@ export const middlewares = hono
 export const apiRoutes = hono.basePath("/api").use(authCheck).route("/auth", authRoutes);
 
 //*------------------------------------------ Static Routes
-hono.get("*", serveStatic({ root: "./client/dist" }));
-hono.get("*", serveStatic({ path: "./client/dist/index.html" }));
+hono.get("*", serveStatic({ root: "./dist" }));
+hono.get("*", serveStatic({ path: "./dist/index.html" }));
 
 //*------------------------------------------ Start the server
 export default {

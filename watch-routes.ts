@@ -1,6 +1,6 @@
 import Watcher from "watcher";
-import { env } from "@/server/lib/env";
-import { log } from "@/server/lib/log";
+import { env } from "@/server/env";
+import { log } from "@/server/utils";
 
 // TODO: Add apiRoutes to the watcher
 // type WatcherEvent = "add" | "addDir" | "change" | "rename" | "renameDir" | "unlink" | "unlinkDir";
@@ -63,13 +63,7 @@ watcher.on("add", (filePath) => {
 	if (isRouteFile && !routeExists) {
 		RoutesMap.set(routeKey, routeObject);
 		pagePathsArray.push(routeObject.path);
-		log.box(
-			`Route '${routeObject.path}' added`,
-			// "\nRoutesMap:",
-			// RoutesMap,
-			"\npagePathsArray:",
-			pagePathsArray,
-		);
+		log.box(`Route '${routeObject.path}' added`);
 
 		writeTypes();
 	}
@@ -82,13 +76,7 @@ watcher.on("unlink", (filePath) => {
 	if (isRouteFile && routeExists) {
 		RoutesMap.delete(routeKey);
 		pagePathsArray = pagePathsArray.filter((path) => path !== routeObject.path);
-		log.box(
-			`Route '${routeObject.path}' removed`,
-			// "\nRoutesMap:",
-			// RoutesMap,
-			"\npagePathsArray:",
-			pagePathsArray,
-		);
+		log.box(`Route '${routeObject.path}' removed`);
 
 		writeTypes();
 	}
@@ -100,13 +88,7 @@ watcher.on("unlinkDir", (dirPath) => {
 	if (routeData) {
 		RoutesMap.delete(key);
 		pagePathsArray = pagePathsArray.filter((path) => path !== routeData.path);
-		log.box(
-			"Route removed bc dir deleted",
-			// "\nRoutesMap:",
-			// RoutesMap,
-			"\npagePathsArray:",
-			pagePathsArray,
-		);
+		log.box("Route removed bc dir deleted");
 
 		writeTypes();
 	}
@@ -125,13 +107,7 @@ watcher.on("rename", (filePath, newFilePath) => {
 	if (isRouteFile && routeExists) {
 		RoutesMap.delete(routeKey);
 		pagePathsArray = pagePathsArray.filter((path) => path !== routeObject.path);
-		log.box(
-			`Route '${routeObject.path}' removed`,
-			// "\nRoutesMap:",
-			// RoutesMap,
-			"\npagePathsArray:",
-			pagePathsArray,
-		);
+		log.box(`Route '${routeObject.path}' removed`);
 
 		writeTypes();
 	}
@@ -139,13 +115,7 @@ watcher.on("rename", (filePath, newFilePath) => {
 	if (newIsRouteFile && !newRouteExists) {
 		RoutesMap.set(newRouteKey, newRouteObject);
 		pagePathsArray.push(newRouteObject.path);
-		log.box(
-			`Route renamed to '${newRouteObject.path}'`,
-			// "\nRoutesMap:",
-			// RoutesMap,
-			"\npagePathsArray:",
-			pagePathsArray,
-		);
+		log.box(`Route renamed to '${newRouteObject.path}'`);
 
 		writeTypes();
 	}

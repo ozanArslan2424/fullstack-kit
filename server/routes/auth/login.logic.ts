@@ -2,9 +2,9 @@ import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
 import { db, table } from "@/server/db";
-import { log } from "@/server/lib/log";
 import { SESSION_COOKIE_NAME } from "@/server/routes/auth/constants";
 import { createSession, generateSessionToken, verifyPassword } from "@/server/routes/auth/utils";
+import { log } from "@/server/utils";
 import { loginSchema } from "./schemas";
 
 export async function loginLogic(c: Context) {

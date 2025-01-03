@@ -21,8 +21,9 @@ export const login = z.object({ email, password });
 export const verifyEmail = z.object({
 	token: z.string().uuid(),
 	email,
-	createdAt: z.string(),
 });
+
+export const verifyEmailResend = z.object({ email });
 
 export const forgotPassword = z.object({ email });
 

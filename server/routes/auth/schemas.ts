@@ -32,3 +32,5 @@ export const changePasswordSchema = authBaseSchema
 export const verifyEmailSchema = authBaseSchema.pick({ email: true }).extend({
 	token: z.string().uuid(),
 });
+
+export const verifyEmailResendSchema = authBaseSchema.pick({ email: true });

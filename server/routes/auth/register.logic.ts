@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
 import { db, table } from "@/server/db";
-import { log } from "@/server/lib/log";
 import { ONE_DAY, SESSION_COOKIE_NAME } from "@/server/routes/auth/constants";
 import {
 	createSession,
@@ -10,6 +9,7 @@ import {
 	hashPassword,
 	sendVerificationEmail,
 } from "@/server/routes/auth/utils";
+import { log } from "@/server/utils";
 import { registerSchema } from "./schemas";
 
 export async function registerLogic(c: Context) {

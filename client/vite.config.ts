@@ -4,16 +4,25 @@ import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { dependencies } from "./package.json";
 
-// https://vitejs.dev/config/
-export default defineConfig({
-	plugins: [react(), tailwindcss(), tsConfigPaths()],
-	server: {
-		proxy: {
-			"/api": "http://localhost:3000",
+export default defineConfig(({ mode }) => {
+	console.log("Vite is running in", mode, "mode");
+	return {
+		plugins: [react(), tailwindcss(), tsConfigPaths()],
+		server: {
+			proxy: {
+				"/api": "http://localhost:3000",
+			},
 		},
-	},
-	optimizeDeps: {
-		include: Object.keys(dependencies),
-		exclude: ["lightningcss", "@tailwindcss"],
-	},
+		optimizeDeps: {
+			include: Object.keys(dependencies),
+			exclude: ["lightningcss", "@tailwindcss"],
+		},
+		build: {
+			outDir: "../dist",
+			cssMinify: "lightningcss",
+			manifest: true,
+			emptyOutDir: true,
+		},
+		envDir: "../",
+	};
 });
