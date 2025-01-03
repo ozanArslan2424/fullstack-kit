@@ -1,0 +1,31 @@
+{
+	"name": "tabula-server",
+	"scripts": {
+		"dev2": "concurrently \"bun run --hot ./server/index.ts\" \"bun run --hot ./watch-pages.ts\"",
+		"format": "prettier --write .",
+		"db": "bunx drizzle-kit generate && bun run ./server/db/migrate.ts",
+		"client": "cd client && bun run dev",
+		"server": "bun run --hot ./server/index.ts",
+		"dev": "concurrently \"bun run client\" \"bun run server\"",
+		"prod": "bun run format && cd client && bun run build && cd .. && bun run ./server/index.ts"
+	},
+	"dependencies": {
+		"@node-rs/argon2": "^2.0.2",
+		"@oslojs/crypto": "^1.0.1",
+		"@oslojs/encoding": "^1.1.0",
+		"drizzle-orm": "^0.38.3",
+		"hono": "^4.6.15",
+		"nodemailer": "^6.9.16",
+		"prettier-plugin-tailwindcss": "^0.6.9",
+		"watcher": "^2.3.1",
+		"zod": "^3.24.1"
+	},
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "^5.2.0",
+		"@types/bun": "^1.1.14",
+		"@types/nodemailer": "^6.4.17",
+		"concurrently": "^9.1.2",
+		"drizzle-kit": "^0.30.1",
+		"prettier": "^3.4.2"
+	}
+}

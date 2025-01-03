@@ -1,0 +1,119 @@
+<html lang="en">
+	<body>
+		<div class="top">
+			<h1 class="h1">Hello from Tabula!</h1>
+
+			<p class="p">Please verify your email address by clicking the button below.</p>
+			<p class="p">This ensures you maintain access to your account.</p>
+			<div class="spacer"></div>
+
+			<a class="a" href="{{url}}"> Verify Email </a>
+			<div class="spacer"></div>
+			<div class="spacer"></div>
+
+			<p class="subtitle">If you didn&apos;t create an account, no action is required.</p>
+			<p class="subtitle">
+				However, consider reviewing your email account's security settings.
+			</p>
+			<div class="spacer"></div>
+
+			<b>
+				Thank you from&nbsp;
+				<a class="team" href="https://ozanarslan.vercel.app">Tabula.</a>
+			</b>
+		</div>
+
+		<footer>
+			<p>&copy; Tabula 2024, All rights reserved.</p>
+		</footer>
+	</body>
+</html>
+
+<style>
+	* {
+		font-family: "Arial", sans-serif;
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	body {
+		background-color: #f9f9f9;
+		color: #333;
+		line-height: 1.6;
+		margin: 0;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+	}
+
+	div.top {
+		background-color: #ffffff;
+		padding: 30px;
+		border-radius: 8px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		max-width: 600px;
+	}
+
+	footer {
+		margin-top: 20px;
+	}
+
+	h1 {
+		font-size: 32px;
+		color: #007866;
+		margin-top: 0;
+		margin-bottom: 10px;
+	}
+
+	p.p {
+		font-weight: 600;
+		font-size: 16px;
+		color: #555555;
+		margin-bottom: 6px;
+	}
+
+	p.subtitle {
+		font-size: 16px;
+		color: #676767;
+		margin-bottom: 3px;
+	}
+
+	a.a {
+		width: 100%;
+		text-align: center;
+		display: inline-block;
+		padding: 12px 30px;
+		background-color: #007866;
+		color: #ffffff;
+		text-decoration: none;
+		border-radius: 5px;
+		font-size: 18px;
+		transition: background-color 0.3s ease;
+	}
+
+	a.a:hover {
+		background-color: #02a76f;
+	}
+
+	a.team {
+		color: #000000;
+		text-decoration: none;
+	}
+
+	a.team:hover {
+		text-decoration: underline;
+	}
+
+	a.contact {
+		color: #007866;
+	}
+
+	div.spacer {
+		height: 20px;
+		width: 100%;
+	}
+</style>

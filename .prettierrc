@@ -1,0 +1,8 @@
+{
+	"printWidth": 100,
+	"tabWidth": 4,
+	"useTabs": true,
+	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+	"importOrder": ["^@/", "^[.]"],
+	"importOrderSortSpecifiers": true
+}
