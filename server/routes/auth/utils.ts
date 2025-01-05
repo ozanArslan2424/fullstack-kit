@@ -1,22 +1,19 @@
-import { hash, verify } from "@node-rs/argon2";
-import { sha256 } from "@oslojs/crypto/sha2";
-import { encodeBase64url, encodeHexLowerCase } from "@oslojs/encoding";
 import { eq } from "drizzle-orm";
+import { env } from "@/env";
 import { db, table } from "@/server/db";
 import type { SessionSelect } from "@/server/db/types";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { env } from "@/server/env";
 import { ONE_DAY } from "@/server/routes/auth/constants";
 
 export function generateSessionToken() {
-	const bytes = crypto.getRandomValues(new Uint8Array(18));
-	const token = encodeBase64url(bytes);
-	return token;
+	return Bun.randomUUIDv7("base64url");
 }
 
 export async function createSession(token: string, userId: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const hasher = new Bun.CryptoHasher("sha256");
+	const sessionId = hasher.update(token).digest("hex");
+
 	const session: SessionSelect = {
 		id: sessionId,
 		userId,
@@ -27,7 +24,9 @@ export async function createSession(token: string, userId: string) {
 }
 
 export async function validateSessionToken(token: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const hasher = new Bun.CryptoHasher("sha256");
+	const sessionId = hasher.update(token).digest("hex");
+
 	const [result] = await db
 		.select()
 		.from(table.session)
@@ -58,21 +57,11 @@ export async function validateSessionToken(token: string) {
 }
 
 export async function verifyPassword(passwordHash: string, password: string) {
-	return verify(passwordHash, password, {
-		memoryCost: 19456,
-		timeCost: 2,
-		outputLen: 32,
-		parallelism: 1,
-	});
+	return Bun.password.verify(password, passwordHash);
 }
 
 export async function hashPassword(password: string) {
-	return hash(password, {
-		memoryCost: 19456,
-		timeCost: 2,
-		outputLen: 32,
-		parallelism: 1,
-	});
+	return Bun.password.hash(password);
 }
 
 export async function sendVerificationEmail(email: string, verificationToken: string) {

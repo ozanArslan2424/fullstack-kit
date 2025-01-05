@@ -8,7 +8,7 @@ import { notFound } from "@/server/middleware/not-found";
 import { onError } from "@/server/middleware/on-error";
 import { authRoutes } from "@/server/routes/auth";
 import { log } from "@/server/utils";
-import "@/watch-routes";
+import "@/watcher/watch-routes";
 
 export interface HonoType {
 	Variables: {
@@ -26,10 +26,11 @@ export const middlewares = hono
 	.use(logger())
 	.use(serveEmojiFavicon("🚀"))
 	.notFound(notFound)
-	.onError(onError);
+	.onError(onError)
+	.use(authCheck);
 
 //*------------------------------------------ API Routes
-export const apiRoutes = hono.basePath("/api").use(authCheck).route("/auth", authRoutes);
+export const apiRoutes = hono.basePath("/api").route("/auth", authRoutes);
 
 //*------------------------------------------ Static Routes
 hono.get("*", serveStatic({ root: "./dist" }));

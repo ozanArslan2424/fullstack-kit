@@ -58,3 +58,15 @@ dist
 .pnp.*
 .idea
 .DS_Store
+*.local
+*.log*
+node_modules
+dist/
+.vinxi
+.output
+.vercel
+.netlify
+.wrangler
+.vscode/*
+!.vscode/extensions.json
+.idea

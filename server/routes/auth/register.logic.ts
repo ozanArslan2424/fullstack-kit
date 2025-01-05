@@ -86,7 +86,6 @@ export async function registerLogic(c: Context) {
 			path: "/",
 		});
 
-		log.info("New user created", valid.data);
 		return c.json({ message: "User created" }, 200);
 	} catch (error) {
 		log.error(error);
