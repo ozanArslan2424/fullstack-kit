@@ -1,5 +1,4 @@
-import { Hono } from "hono";
-import type { HonoType } from "@/server";
+import { createRouter } from "@/server/lib/create-app";
 import { changePasswordLogic } from "./change-password.logic";
 import { forgotPasswordLogic } from "./forgot-password.logic";
 import { loginLogic } from "./login.logic";
@@ -9,7 +8,7 @@ import { registerLogic } from "./register.logic";
 import { verifyEmailResendLogic } from "./verify-email-resend.logic";
 import { verifyEmailLogic } from "./verify-email.logic";
 
-export const authRoutes = new Hono<HonoType>()
+export const authRoutes = createRouter()
 	//*------------------------------------------------------------------- Register
 	.post("/register", registerLogic)
 	//*------------------------------------------------------------------- Login

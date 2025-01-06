@@ -1,43 +1,24 @@
-import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import { logger } from "hono/logger";
-import type { SessionSelect, UserSelect } from "@/server/db/types";
-import { authCheck } from "@/server/middleware/auth-check";
-import { serveEmojiFavicon } from "@/server/middleware/emoji-favicon";
-import { notFound } from "@/server/middleware/not-found";
-import { onError } from "@/server/middleware/on-error";
+import { createApp } from "@/server/lib/create-app";
+import { log } from "@/server/lib/utils";
 import { authRoutes } from "@/server/routes/auth";
-import { log } from "@/server/utils";
+import "@/watcher/watch-pages";
 import "@/watcher/watch-routes";
 
-export interface HonoType {
-	Variables: {
-		user: UserSelect | null;
-		session: SessionSelect | null;
-	};
-}
 //*------------------------------------------ App setup
-const hono = new Hono<HonoType>();
-log.clear();
+const app = createApp();
+
 log.start("🚀 Let's go!");
 
-//*------------------------------------------ Middlewares
-export const middlewares = hono
-	.use(logger())
-	.use(serveEmojiFavicon("🚀"))
-	.notFound(notFound)
-	.onError(onError)
-	.use(authCheck);
-
 //*------------------------------------------ API Routes
-export const apiRoutes = hono.basePath("/api").route("/auth", authRoutes);
+app.basePath("/api").route("/auth", authRoutes);
 
 //*------------------------------------------ Static Routes
-hono.get("*", serveStatic({ root: "./dist" }));
-hono.get("*", serveStatic({ path: "./dist/index.html" }));
+app.get("*", serveStatic({ root: "./dist" }));
+app.get("*", serveStatic({ path: "./dist/index.html" }));
 
 //*------------------------------------------ Start the server
 export default {
 	port: 3000,
-	fetch: hono.fetch,
+	fetch: app.fetch,
 };

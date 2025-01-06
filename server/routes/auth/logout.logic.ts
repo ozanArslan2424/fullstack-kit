@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
-import type { Context } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { db, table } from "@/server/db";
-import { SESSION_COOKIE_NAME } from "@/server/routes/auth/constants";
+import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
+import { HonoContext } from "@/server/lib/types";
 
-export async function logoutLogic(c: Context) {
+export async function logoutLogic(c: HonoContext) {
 	const session = c.get("session");
 	if (!session) {
 		return c.json({ message: "User not logged in" }, 400);

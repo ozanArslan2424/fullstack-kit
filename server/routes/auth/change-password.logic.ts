@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
-import type { Context } from "hono";
 import { db, table } from "@/server/db";
-import { changePasswordSchema } from "@/server/routes/auth/schemas";
-import { hashPassword } from "@/server/routes/auth/utils";
+import { changePasswordSchema } from "@/server/lib/schemas";
+import { HonoContext } from "@/server/lib/types";
+import { hashPassword } from "@/server/lib/utils";
 
-export async function changePasswordLogic(c: Context) {
+export async function changePasswordLogic(c: HonoContext) {
 	const data = await c.req.json();
 	const valid = changePasswordSchema.safeParse(data);
 

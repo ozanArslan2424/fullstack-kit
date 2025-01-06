@@ -1,8 +1,8 @@
 import { createTransport } from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { env } from "@/env";
-import { getErrorMessage } from "@/server/utils";
-import { log } from "@/server/utils";
+import { getErrorMessage } from "@/server/lib/utils";
+import { log } from "@/server/lib/utils";
 
 const options: SMTPTransport.Options = {
 	host: env.EMAIL_HOST,

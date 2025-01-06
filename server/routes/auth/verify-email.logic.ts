@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
-import type { Context } from "hono";
 import { db, table } from "@/server/db";
-import { verifyEmailSchema } from "./schemas";
+import { verifyEmailSchema } from "@/server/lib/schemas";
+import { HonoContext } from "@/server/lib/types";
 
-export async function verifyEmailLogic(c: Context) {
+export async function verifyEmailLogic(c: HonoContext) {
 	const data = await c.req.json();
 	const valid = verifyEmailSchema.safeParse(data);
 

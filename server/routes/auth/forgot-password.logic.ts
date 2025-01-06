@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
-import type { Context } from "hono";
 import { env } from "@/env";
 import { db, table } from "@/server/db";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { ONE_DAY } from "@/server/routes/auth/constants";
-import { forgotPasswordSchema } from "@/server/routes/auth/schemas";
+import { ONE_DAY } from "@/server/lib/constants";
+import { forgotPasswordSchema } from "@/server/lib/schemas";
+import { HonoContext } from "@/server/lib/types";
 
-export async function forgotPasswordLogic(c: Context) {
+export async function forgotPasswordLogic(c: HonoContext) {
 	const data = await c.req.json();
 	const valid = forgotPasswordSchema.safeParse(data);
 

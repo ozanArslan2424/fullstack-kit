@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
-import type { Context } from "hono";
 import { db, table } from "@/server/db";
-import { log } from "@/server/utils";
-import { ONE_DAY } from "./constants";
-import { verifyEmailResendSchema } from "./schemas";
-import { sendVerificationEmail } from "./utils";
+import { ONE_DAY } from "@/server/lib/constants";
+import { verifyEmailResendSchema } from "@/server/lib/schemas";
+import { HonoContext } from "@/server/lib/types";
+import { log } from "@/server/lib/utils";
+import { sendVerificationEmail } from "@/server/lib/utils";
 
-export async function verifyEmailResendLogic(c: Context) {
+export async function verifyEmailResendLogic(c: HonoContext) {
 	const data = await c.req.json();
 	const valid = verifyEmailResendSchema.safeParse(data);
 

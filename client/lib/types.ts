@@ -16,16 +16,10 @@ export type ServerRoutePath = (typeof serverRoutePaths)[number];
 export type ServerRoutePathParam<P extends ServerRoutePath> = ExtractRouteParams<P>;
 export type ServerRouteSearchParam<P extends ServerRoutePath> = ExtractSearchParams<P>;
 
-export type RequestMethod =
-	| "GET"
-	| "HEAD"
-	| "OPTIONS"
-	| "TRACE"
-	| "PUT"
-	| "DELETE"
-	| "POST"
-	| "PATCH"
-	| "CONNECT";
+export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
+// | "HEAD"
+// | "TRACE"
+// | "CONNECT";
 
 export type RequestOptions = Omit<RequestInit, "method"> & {
 	method?: RequestMethod;

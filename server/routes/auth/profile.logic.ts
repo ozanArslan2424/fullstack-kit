@@ -1,6 +1,6 @@
-import type { Context } from "hono";
+import { HonoContext } from "@/server/lib/types";
 
-export async function profileLogic(c: Context) {
+export async function profileLogic(c: HonoContext) {
 	const user = c.get("user");
 	if (!user) {
 		return c.json({ message: "User not logged in" }, 401);
