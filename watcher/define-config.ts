@@ -3,7 +3,7 @@ import { makePath } from "./utils";
 const defaults = {
 	rootDir: "",
 	ignoreFilePrefixes: ["_", "."],
-	generatedFilePath: "/client/routes.gen.ts",
+	generatedFilePath: "/routes.gen.ts",
 	server: {
 		routesDir: "/server/routes/",
 		routePrefix: "/api",

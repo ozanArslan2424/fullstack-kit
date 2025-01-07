@@ -1,5 +1,5 @@
 import { Link } from "@/client/components/link";
-import { clientRoutePaths } from "@/client/routes.gen";
+import { clientRoutePaths } from "@/routes.gen";
 
 export function LandingPage() {
 	return (

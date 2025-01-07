@@ -3,7 +3,6 @@ CREATE TABLE `account` (
 	`providerId` text NOT NULL,
 	`userId` text NOT NULL,
 	`passwordHash` text NOT NULL,
-	`emailVerified` integer,
 	`locked` integer,
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -21,6 +20,7 @@ CREATE TABLE `user` (
 	`email` text NOT NULL,
 	`image` text,
 	`about` text,
+	`emailVerified` integer,
 	`createdAt` integer NOT NULL,
 	`updatedAt` integer NOT NULL
 );

@@ -1,6 +1,6 @@
 import { createTransport } from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-import { env } from "@/env";
+import { env } from "@/lib/env";
 import { getErrorMessage } from "@/lib/get-err-msg";
 import { log } from "@/lib/log";
 

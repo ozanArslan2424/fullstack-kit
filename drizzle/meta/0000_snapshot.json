@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e1b1d046-bbbd-47ee-93c9-654cac3318de",
+  "id": "829f05e0-9ab8-4e7f-84a9-0d4b3de83790",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -33,13 +33,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "emailVerified": {
-          "name": "emailVerified",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         },
         "locked": {
@@ -149,6 +142,13 @@
         "about": {
           "name": "about",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emailVerified": {
+          "name": "emailVerified",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

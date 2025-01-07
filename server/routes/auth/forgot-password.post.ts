@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { env } from "@/env";
+import { env } from "@/lib/env";
 import { ONE_DAY } from "@/lib/constants";
 import { forgotPasswordSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";

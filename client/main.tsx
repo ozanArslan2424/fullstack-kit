@@ -13,8 +13,6 @@ if (rootElement.innerHTML) {
 	throw new Error("Root element must be empty");
 }
 
-const root = ReactDOM.createRoot(rootElement);
-
 const queryClient = new QueryClient();
 
-root.render(<App queryClient={queryClient} />);
+ReactDOM.createRoot(rootElement).render(<App queryClient={queryClient} />);
