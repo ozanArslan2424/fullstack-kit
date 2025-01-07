@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { deleteCookie } from "hono/cookie";
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import { db, table } from "@/server/db";
-import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
-import { HonoContext } from "@/server/lib/types";
+import { HonoContext } from "@/server/types";
 
 export async function logoutLogic(c: HonoContext) {
 	const session = c.get("session");

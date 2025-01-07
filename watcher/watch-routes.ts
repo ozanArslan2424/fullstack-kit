@@ -1,123 +1,192 @@
 import Watcher from "watcher";
-import config from "@/pages.config";
-import { log } from "@/server/utils";
-import { pathToCamelCase, writeGeneratedFile } from "./utils";
+import { log } from "@/lib/log";
+import config from "@/routes.config";
+import { pathToPascalCase } from "./utils";
 
-// TODO: Add apiRoutes to the watcher
-// TODO: Add watcher for the config file
-// TODO: Add watcher for loaders
+export type ClientMapType = { name: string; path: string };
+export type ServerMapType = { name: string; path: string; method: string };
 
-// type WatcherEvent = "add" | "addDir" | "change" | "rename" | "renameDir" | "unlink" | "unlinkDir";
-const { pagesDir, pageFileNames, ignoreFilePrefixes, indexPageFolderNames } = config;
-log.info("Watching directory:", pagesDir);
+export const serverRouteRegex = /^(.*)\.(get|post|put|delete|patch|options)\.ts$/;
+export const serverRoutePrefix = config.server.routePrefix ?? "";
 
-const RoutesMap = new Map();
-const watcher = new Watcher(pagesDir, {
-	recursive: true,
-	renameDetection: true,
-});
-let pagePathsArray: string[] = [];
-
-function checkFile(filePath: string) {
-	const path = String(filePath).replace(pagesDir, "");
-	const targetParent = path.split("/").slice(0, -1).join("/") as string;
-	const targetName = path.split("/").pop() as string;
-	const routeKey = pathToCamelCase(targetParent);
-
-	// check the second character of the targetParent to see if it's a hidden file
-	const isIgnored = ignoreFilePrefixes.some((prefix) => targetParent.charAt(1) === prefix);
-	const matchesPageFile = pageFileNames.some((name) => {
+export function makeClientRoute(fp: string) {
+	const filePath = String(fp.replace(config.client.routesDir, ""));
+	const prefixed = config.ignoreFilePrefixes.some((prefix) => filePath.charAt(1) === prefix);
+	const isRouteFile = config.client.routeFileNames.some((name) => {
 		if (name.startsWith("*")) {
-			return targetName.endsWith(name.slice(1));
+			return filePath.endsWith(name.slice(1));
 		}
-		return targetName === name;
+		return filePath.endsWith(name);
 	});
+	const isInvalid = prefixed || !isRouteFile || filePath.endsWith(".DS_Store");
+	if (isInvalid) return;
 
-	const isRouteFile = matchesPageFile && !isIgnored;
+	const isIndexRoute = config.client.indexRouteDirNames.some((name) =>
+		filePath.startsWith("/" + name),
+	);
+	const name = pathToPascalCase(filePath.replace("/index.tsx", ""));
+	const path = isIndexRoute ? "/" : filePath.replace("/index.tsx", "");
 
-	const routePath = indexPageFolderNames.includes(targetParent) ? "/" : targetParent;
-
-	const routeExists = RoutesMap.has(routeKey);
-
-	const routeObject = routeExists
-		? RoutesMap.get(routeKey)
-		: isRouteFile
-			? { path: routePath, name: routeKey }
-			: null;
-
-	return { isRouteFile, routeExists, routeKey, routeObject };
+	return { name, path };
 }
 
-watcher.on("add", (filePath) => {
-	if (filePath.endsWith(".DS_Store")) return null;
-	const { isRouteFile, routeExists, routeKey, routeObject } = checkFile(filePath);
+export function makeServerRoute(fp: string) {
+	const filePath = serverRoutePrefix + String(fp.replace(config.server.routesDir, ""));
+	const fileName = String(filePath.split("/").pop());
+	const prefixed = config.ignoreFilePrefixes.some((prefix) => fileName.startsWith(prefix));
+	const notRouteFile = !serverRouteRegex.test(fileName);
+	const isInvalid = prefixed || notRouteFile || filePath.endsWith(".DS_Store");
 
-	if (isRouteFile && !routeExists) {
-		RoutesMap.set(routeKey, routeObject);
-		pagePathsArray.push(routeObject.path);
-		log.box(`Route '${routeObject.path}' added`);
+	if (isInvalid) return;
 
-		writeGeneratedFile(pagePathsArray, RoutesMap);
-	}
+	const name = pathToPascalCase(filePath.replace(".ts", "").replace(".", "/"));
+	const path = filePath.split(".")[0];
+	const method = fileName.split(".")[1].toUpperCase();
+
+	return { name, path, method };
+}
+
+export async function writeGeneratedFile(clientMap: ClientMapType[], serverMap: ServerMapType[]) {
+	const clientArray = clientMap.map((route) => route.path);
+	const serverArray = serverMap.map((route) => route.path);
+
+	const extractTypes = `
+type ExtractRouteParams<T> = T extends \`\${infer _Start}:\${infer Param}/\${infer Rest}\`\n ? { [k in Param | keyof ExtractRouteParams<Rest>]: string } : T extends \`\${infer _Start}:\${infer Param}\` ? { [k in Param]: string } : { [k in string]: string };
+type ExtractSearchParams<P> = P extends \`\${infer _Start}?\${infer Search}\` ? { [k in Search]: string } : { [k in string]: string };`;
+
+	const clientContent =
+		clientArray.length === 0
+			? ""
+			: `declare global { type ClientRoutePath = ${clientArray.map((path) => `"${path}"`).join(" | ")}; type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>; type ClientRouteSearchParam<P extends ClientRoutePath> = ExtractSearchParams<P>; }\n
+export const clientRoutesMap = ${JSON.stringify(clientMap)};\n
+export const clientRoutePaths:ClientRoutePath[] = ${JSON.stringify(clientArray)};\n`;
+
+	const serverContent =
+		serverArray.length === 0
+			? ""
+			: `declare global { type ServerRoutePath = ${serverArray.map((path) => `"${path}"`).join(" | ")}; type ServerRoutePathParam<P extends ServerRoutePath> = ExtractRouteParams<P>; type ServerRouteSearchParam<P extends ServerRoutePath> = ExtractSearchParams<P>; }\n
+export const serverRoutesMap = ${JSON.stringify(serverMap)};\n
+export const serverRoutePaths:ServerRoutePath[] = ${JSON.stringify(serverArray)};\n`;
+
+	const content = `
+// Auto-generated by watch-routes.ts\n
+${extractTypes}\n
+${clientContent}\n
+${serverContent}\n
+	`;
+
+	await Bun.write(config.generatedFilePath, content);
+}
+
+let clientMap: ClientMapType[] = [];
+let serverMap: ServerMapType[] = [];
+
+const w = new Watcher([config.server.routesDir, config.client.routesDir], {
+	recursive: true,
+	renameDetection: true,
+	ignoreInitial: false,
 });
 
-watcher.on("unlink", (filePath) => {
-	if (filePath.endsWith(".DS_Store")) return null;
-	const { isRouteFile, routeExists, routeKey, routeObject } = checkFile(filePath);
+w.on("ready", () => log.start("👀 Watching routes..."));
+w.on("error", log.error);
+w.on("close", () => log.end("👋 Stopped watching routes..."));
 
-	if (isRouteFile && routeExists) {
-		RoutesMap.delete(routeKey);
-		pagePathsArray = pagePathsArray.filter((path) => path !== routeObject.path);
-		log.box(`Route '${routeObject.path}' removed`);
-
-		writeGeneratedFile(pagePathsArray, RoutesMap);
-	}
-});
-
-watcher.on("unlinkDir", (dirPath) => {
-	const key = pathToCamelCase(dirPath);
-	const routeData = RoutesMap.get(key);
-	if (routeData) {
-		RoutesMap.delete(key);
-		pagePathsArray = pagePathsArray.filter((path) => path !== routeData.path);
-		log.box("Route removed bc dir deleted");
-
-		writeGeneratedFile(pagePathsArray, RoutesMap);
-	}
-});
-
-watcher.on("rename", (filePath, newFilePath) => {
-	if (filePath.endsWith(".DS_Store")) return null;
-	const { isRouteFile, routeExists, routeKey, routeObject } = checkFile(filePath);
-	const {
-		isRouteFile: newIsRouteFile,
-		routeExists: newRouteExists,
-		routeKey: newRouteKey,
-		routeObject: newRouteObject,
-	} = checkFile(newFilePath);
-
-	if (isRouteFile && routeExists) {
-		RoutesMap.delete(routeKey);
-		pagePathsArray = pagePathsArray.filter((path) => path !== routeObject.path);
-		log.box(`Route '${routeObject.path}' removed`);
-
-		writeGeneratedFile(pagePathsArray, RoutesMap);
+w.on("add", (fp) => {
+	if (fp.includes(config.client.routesDir)) {
+		const route = makeClientRoute(fp);
+		if (!route) return;
+		clientMap.push(route);
+	} else {
+		const route = makeServerRoute(fp);
+		if (!route) return;
+		serverMap.push(route);
 	}
 
-	if (newIsRouteFile && !newRouteExists) {
-		RoutesMap.set(newRouteKey, newRouteObject);
-		pagePathsArray.push(newRouteObject.path);
-		log.box(`Route renamed to '${newRouteObject.path}'`);
+	log.debug("map", serverMap);
+	log.count("--");
+	writeGeneratedFile(clientMap, serverMap);
+});
 
-		writeGeneratedFile(pagePathsArray, RoutesMap);
+w.on("unlink", (fp) => {
+	if (fp.includes(config.client.routesDir)) {
+		const route = makeClientRoute(fp);
+		if (!route) return;
+		clientMap.splice(clientMap.indexOf(route), 1);
+	} else {
+		const route = makeServerRoute(fp);
+		if (!route) return;
+		serverMap.splice(serverMap.indexOf(route), 1);
 	}
+	log.debug("map", serverMap);
+	log.count("--");
+	writeGeneratedFile(clientMap, serverMap);
 });
 
-watcher.on("error", (err) => {
-	log.error("Watcher error:", err);
+w.on("rename", (fp, newFp) => {
+	if (fp.includes(config.client.routesDir)) {
+		const route = makeClientRoute(fp);
+		const newRoute = makeClientRoute(newFp);
+		if (route) {
+			const existingRoute = clientMap.find((r) => r.name === route.name);
+			if (existingRoute) clientMap.splice(clientMap.indexOf(existingRoute), 1);
+		}
+		if (!newRoute) return;
+		clientMap.push(newRoute);
+	} else {
+		const route = makeServerRoute(fp);
+		const newRoute = makeServerRoute(newFp);
+		if (route) {
+			const existingRoute = serverMap.find((r) => r.name === route.name);
+			if (existingRoute) serverMap.splice(serverMap.indexOf(existingRoute), 1);
+		}
+		if (!newRoute) return;
+		serverMap.push(newRoute);
+	}
+	log.debug("map", serverMap);
+	log.count("--");
+	writeGeneratedFile(clientMap, serverMap);
 });
 
-process.on("SIGINT", () => {
-	watcher.close();
-	process.exit(0);
+w.on("unlinkDir", (dir) => {
+	if (dir.includes(config.client.routesDir)) {
+		const dirPath = String(dir.replace(config.client.routesDir, ""));
+		clientMap = clientMap.filter((route) => !route.path.startsWith(dirPath));
+	} else {
+		const dirPath = serverRoutePrefix + String(dir.replace(config.server.routesDir, ""));
+		serverMap = serverMap.filter((route) => !route.path.startsWith(dirPath));
+	}
+
+	log.debug("map", { clientMap, serverMap });
+	log.count("--");
+	writeGeneratedFile(clientMap, serverMap);
+});
+
+w.on("renameDir", (dir, newDir) => {
+	if (dir.includes(config.client.routesDir)) {
+		const dirPath = String(dir.replace(config.client.routesDir, ""));
+		const newDirPath = String(newDir.replace(config.client.routesDir, ""));
+
+		clientMap.map((route) => {
+			if (route.path.startsWith(dirPath)) {
+				const newPath = route.path.replace(dirPath, newDirPath);
+				const newRoute = { ...route, path: newPath };
+				clientMap.splice(clientMap.indexOf(route), 1, newRoute);
+			}
+		});
+	} else {
+		const dirPath = serverRoutePrefix + String(dir.replace(config.server.routesDir, ""));
+		const newDirPath = serverRoutePrefix + String(newDir.replace(config.server.routesDir, ""));
+
+		serverMap.map((route) => {
+			if (route.path.startsWith(dirPath)) {
+				const newPath = route.path.replace(dirPath, newDirPath);
+				const newRoute = { ...route, path: newPath };
+				serverMap.splice(serverMap.indexOf(route), 1, newRoute);
+			}
+		});
+	}
+
+	log.debug("map", { clientMap, serverMap });
+	log.count("--");
+	writeGeneratedFile(clientMap, serverMap);
 });

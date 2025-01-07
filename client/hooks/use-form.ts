@@ -1,33 +1,15 @@
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { ZodError, ZodType } from "zod";
 
-export type UseMutationFormOptions<T, R> = {
+export type UseFormOptions<T, R> = {
 	schema?: ZodType<T>;
-	mutationFn: (values: T) => R | Promise<R>;
-} & UseMutationOptions<R, Error, T, unknown>;
+	next: (values: T) => R | Promise<R>;
+};
 
 type FieldErrors<T> = ZodError<T>["formErrors"]["fieldErrors"] & { root?: string };
 
-export function useForm<T = any, R = void>({
-	schema,
-	mutationFn,
-	...options
-}: UseMutationFormOptions<T, R>) {
+export function useForm<T = any, R = void>({ schema, next }: UseFormOptions<T, R>) {
 	const [errors, setErrors] = useState<FieldErrors<T>>({});
-
-	const { mutate, isPending } = useMutation({
-		mutationFn: async (values: T) => mutationFn(values),
-		onError: (e, v, c) => {
-			if (e instanceof ZodError) {
-				setErrors(e.formErrors.fieldErrors);
-			} else {
-				setErrors({ ...errors, root: e.message });
-			}
-			options.onError?.(e, v, c);
-		},
-		...options,
-	});
 
 	function safeSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -35,7 +17,7 @@ export function useForm<T = any, R = void>({
 		setErrors({});
 
 		if (!schema) {
-			mutate({} as T);
+			next({} as T);
 			return;
 		}
 
@@ -62,8 +44,8 @@ export function useForm<T = any, R = void>({
 			return;
 		}
 
-		mutate(data);
+		next(data);
 	}
 
-	return { errors, safeSubmit, isPending };
+	return { errors, safeSubmit };
 }

@@ -1,4 +1,4 @@
-import { getErrorMessage } from "@/client/utils/get-err-msg";
+import { getErrorMessage } from "@/lib/get-err-msg";
 
 export function GenericError({ error }: { error: unknown }) {
 	return (

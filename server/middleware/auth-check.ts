@@ -1,9 +1,9 @@
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
-import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
-import { log } from "@/server/lib/utils";
-import { validateSessionToken } from "@/server/lib/utils";
-import { HonoType } from "./types";
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
+import { log } from "@/lib/log";
+import { validateSessionToken } from "@/server/routes/auth/auth-utils";
+import { HonoType } from "@/server/types";
 
 export const authCheck = createMiddleware<HonoType>(async (c, next) => {
 	const sessionToken = getCookie(c, SESSION_COOKIE_NAME);

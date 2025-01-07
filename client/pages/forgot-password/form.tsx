@@ -1,18 +1,18 @@
+import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
-import { app } from "@/client/lib/config";
-import { sendRequest } from "@/client/utils/send-request";
+import { useRequest } from "@/client/hooks/use-request";
+import { forgotPasswordSchema } from "@/lib/schemas";
 
 export function ForgotPasswordForm() {
-	const { errors, isPending, safeSubmit } = useForm({
-		schema: app.server.forgotPassword.schema,
-		mutationFn: (data) =>
-			sendRequest(app.server.forgotPassword.path, {
-				method: app.server.forgotPassword.method,
-				body: JSON.stringify(data),
-			}),
-		onSuccess: () => {
-			// TODO
-		},
+	const { mutate, isPending } = useRequest({
+		path: "/api/auth/forgot-password",
+		options: { method: "POST" },
+		onError: ({ message }) => toast.error(message),
+	});
+
+	const { errors, safeSubmit } = useForm({
+		schema: forgotPasswordSchema,
+		next: mutate,
 	});
 
 	return (

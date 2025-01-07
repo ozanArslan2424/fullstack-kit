@@ -8,6 +8,13 @@
       "when": 1736115616738,
       "tag": "0000_real_apocalypse",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1736255576254,
+      "tag": "0001_bizarre_hex",
+      "breakpoints": true
     }
   ]
 }

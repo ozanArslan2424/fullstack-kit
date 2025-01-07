@@ -1,4 +1,5 @@
 import { createMiddleware } from "hono/factory";
+import { HonoType } from "../types";
 
 export const serveEmojiFavicon = (emoji: string) =>
 	createMiddleware<HonoType>(async (c, next) => {

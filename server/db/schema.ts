@@ -6,6 +6,7 @@ export const user = sqliteTable("user", {
 	email: text("email").notNull().unique(),
 	image: text("image"),
 	about: text("about"),
+	emailVerified: boolean("emailVerified"),
 	createdAt: timestamp("createdAt").notNull(),
 	updatedAt: timestamp("updatedAt").notNull(),
 });
@@ -25,7 +26,6 @@ export const account = sqliteTable("account", {
 		.notNull()
 		.references(() => user.id),
 	passwordHash: text("passwordHash").notNull(),
-	emailVerified: boolean("emailVerified"),
 	locked: boolean("locked"),
 });
 

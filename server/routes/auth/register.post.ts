@@ -1,16 +1,16 @@
 import { eq } from "drizzle-orm";
 import { setCookie } from "hono/cookie";
+import { ONE_DAY, SESSION_COOKIE_NAME } from "@/lib/constants";
+import { log } from "@/lib/log";
+import { registerSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";
-import { ONE_DAY, SESSION_COOKIE_NAME } from "@/server/lib/constants";
-import { HonoContext } from "@/server/lib/types";
-import { log } from "@/server/lib/utils";
 import {
 	createSession,
 	generateSessionToken,
 	hashPassword,
 	sendVerificationEmail,
-} from "@/server/lib/utils";
-import { registerSchema } from "../../lib/schemas";
+} from "@/server/routes/auth/auth-utils";
+import { HonoContext } from "@/server/types";
 
 export async function registerLogic(c: HonoContext) {
 	const user = c.get("user");
@@ -46,6 +46,7 @@ export async function registerLogic(c: HonoContext) {
 				id: userId,
 				name: valid.data.username,
 				email: valid.data.email,
+				emailVerified: false,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			});
@@ -54,7 +55,6 @@ export async function registerLogic(c: HonoContext) {
 				providerId: "email",
 				userId,
 				passwordHash,
-				emailVerified: false,
 			});
 			await tx.insert(table.verification).values({
 				id: crypto.randomUUID(),

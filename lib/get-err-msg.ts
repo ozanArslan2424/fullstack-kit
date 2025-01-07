@@ -1,3 +1,5 @@
+import { log } from "./log";
+
 export function getErrorMessage(error: unknown) {
 	let message: string;
 
@@ -11,6 +13,6 @@ export function getErrorMessage(error: unknown) {
 		message = "Something went wrong";
 	}
 
-	console.error("🎣 Caught Error:", message);
+	log.error("Caught Error:", message);
 	return message;
 }

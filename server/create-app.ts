@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { authCheck } from "./auth-check";
-import { serveEmojiFavicon } from "./emoji-favicon";
-import { notFound } from "./not-found";
-import { onError } from "./on-error";
-import { HonoType } from "./types";
+import { HonoType } from "@/server/types";
+import { authCheck } from "./middleware/auth-check";
+import { serveEmojiFavicon } from "./middleware/emoji-favicon";
+import { notFound } from "./middleware/not-found";
+import { onError } from "./middleware/on-error";
 
 export function createRouter() {
 	return new Hono<HonoType>();

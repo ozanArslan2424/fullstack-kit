@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
+import { verifyEmailSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";
-import { verifyEmailSchema } from "@/server/lib/schemas";
-import { HonoContext } from "@/server/lib/types";
+import { HonoContext } from "@/server/types";
 
 export async function verifyEmailLogic(c: HonoContext) {
 	const data = await c.req.json();
@@ -35,12 +35,8 @@ export async function verifyEmailLogic(c: HonoContext) {
 	await db.transaction(async (tx) => {
 		await tx
 			.update(table.user)
-			.set({ email: verification.userEmail })
+			.set({ email: verification.userEmail, emailVerified: true })
 			.where(eq(table.user.id, verification.userId));
-		await tx
-			.update(table.account)
-			.set({ emailVerified: true })
-			.where(eq(table.account.userId, verification.userId));
 		await tx.delete(table.verification).where(eq(table.verification.token, verification.token));
 	});
 

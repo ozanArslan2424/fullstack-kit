@@ -1,12 +1,12 @@
-import { createRouter } from "@/server/lib/create-app";
-import { changePasswordLogic } from "./change-password.logic";
-import { forgotPasswordLogic } from "./forgot-password.logic";
-import { loginLogic } from "./login.logic";
-import { logoutLogic } from "./logout.logic";
-import { profileLogic } from "./profile.logic";
-import { registerLogic } from "./register.logic";
-import { verifyEmailResendLogic } from "./verify-email-resend.logic";
-import { verifyEmailLogic } from "./verify-email.logic";
+import { createRouter } from "@/server/create-app";
+import { changePasswordLogic } from "./change-password.post";
+import { forgotPasswordLogic } from "./forgot-password.post";
+import { loginLogic } from "./login.post";
+import { logoutLogic } from "./logout.post";
+import { profileLogic } from "./profile.get";
+import { registerLogic } from "./register.post";
+import { verifyEmailResendLogic } from "./verify-email-resend.post";
+import { verifyEmailLogic } from "./verify-email.post";
 
 export const authRoutes = createRouter()
 	//*------------------------------------------------------------------- Register

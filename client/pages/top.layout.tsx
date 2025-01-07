@@ -3,7 +3,6 @@ import { Outlet } from "react-router";
 import { Link } from "@/client/components/link";
 import { useGuard } from "@/client/hooks/use-guard";
 import { useRouter } from "@/client/hooks/use-router";
-import { app } from "@/client/lib/config";
 import { sendRequest } from "@/client/utils/send-request";
 
 export function TopLayout() {
@@ -13,15 +12,15 @@ export function TopLayout() {
 	const queryClient = useQueryClient();
 
 	const { mutate } = useMutation({
-		mutationKey: [app.server.logout.path],
+		mutationKey: ["logout"],
 		mutationFn: () =>
-			sendRequest(app.server.logout.path, {
-				method: app.server.logout.method,
+			sendRequest("/api/auth/logout", {
+				method: "POST",
 			}),
 		onSuccess: () => {
 			queryClient
 				.invalidateQueries({
-					queryKey: [app.server.profile.path],
+					queryKey: ["profile"],
 				})
 				.then(() => router.push("/login"));
 		},

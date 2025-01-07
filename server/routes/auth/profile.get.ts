@@ -1,4 +1,4 @@
-import { HonoContext } from "@/server/lib/types";
+import { HonoContext } from "@/server/types";
 
 export async function profileLogic(c: HonoContext) {
 	const user = c.get("user");

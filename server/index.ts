@@ -1,13 +1,12 @@
 import { serveStatic } from "hono/bun";
-import { createApp } from "@/server/lib/create-app";
-import { log } from "@/server/lib/utils";
+import { log } from "@/lib/log";
+import { createApp } from "@/server/create-app";
 import { authRoutes } from "@/server/routes/auth";
-import "@/watcher/watch-pages";
 import "@/watcher/watch-routes";
 
 //*------------------------------------------ App setup
 const app = createApp();
-
+log.clear();
 log.start("🚀 Let's go!");
 
 //*------------------------------------------ API Routes

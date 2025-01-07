@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
+import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { app } from "@/client/lib/config";
 import { sendRequest } from "@/client/utils/send-request";
+import { changePasswordSchema } from "@/lib/schemas";
 
 export function ChangePasswordForm() {
 	const router = useRouter();
@@ -19,16 +21,21 @@ export function ChangePasswordForm() {
 		}
 	}, [token, email, router]);
 
-	const { errors, isPending, safeSubmit } = useForm({
-		schema: app.server.changePassword.schema,
-		mutationFn: (data) =>
-			sendRequest(app.server.changePassword.path, {
-				method: app.server.changePassword.method,
-				body: JSON.stringify(data),
-			}),
-		onSuccess: () => {
-			// TODO
+	const { mutate, isPending } = useRequest({
+		path: "/api/auth/change-password",
+		options: { method: "POST" },
+		onError: ({ message }) => toast.error(message),
+		onSuccess: async () => {
+			toast.success("Password changed.");
+			sendRequest("/api/auth/logout", { method: "POST" }).then((res) => {
+				router.push("/login");
+			});
 		},
+	});
+
+	const { errors, safeSubmit } = useForm({
+		schema: changePasswordSchema,
+		next: mutate,
 	});
 
 	if (!token || !email) return;

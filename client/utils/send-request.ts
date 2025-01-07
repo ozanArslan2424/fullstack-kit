@@ -1,10 +1,15 @@
-import type { RequestOptions, ServerRoutePath, ServerRoutePathParam } from "@/client/lib/types";
+export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
+
+export type RequestOptions = Omit<RequestInit, "method"> & {
+	method?: RequestMethod;
+	params?: ServerRoutePathParam<ServerRoutePath>;
+	search?: ServerRouteSearchParam<ServerRoutePath>;
+};
 
 export async function sendRequest<T = any>(path: ServerRoutePath, options: RequestOptions = {}) {
-	const { params, search } = options;
+	const { params, search, ...rest } = options;
 	let url: string = path;
 
-	// Handle path parameters
 	if (params) {
 		for (const key of Object.keys(params) as Array<
 			keyof ServerRoutePathParam<ServerRoutePath>
@@ -12,8 +17,6 @@ export async function sendRequest<T = any>(path: ServerRoutePath, options: Reque
 			url = url.replace(`:${key}`, params[key]);
 		}
 	}
-
-	// Handle search parameters
 	if (search) {
 		const searchParams = new URLSearchParams();
 		Object.entries(search as Record<string, string>).forEach(([key, value]) => {
@@ -25,12 +28,10 @@ export async function sendRequest<T = any>(path: ServerRoutePath, options: Reque
 		}
 	}
 
-	const res = await fetch(url, options);
-	const data = await res.json();
+	const res = await fetch(url, rest);
+	const data = (await res.json()) as T;
 
-	if (!res.ok) {
-		throw new Error(data.message);
-	}
-
-	return data as T;
+	return { res, data };
 }
+
+export type RequestReturn<T = any> = ReturnType<typeof sendRequest<T>>;

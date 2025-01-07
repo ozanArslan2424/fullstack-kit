@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { env } from "@/env";
+import { ONE_DAY } from "@/lib/constants";
+import { forgotPasswordSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { ONE_DAY } from "@/server/lib/constants";
-import { forgotPasswordSchema } from "@/server/lib/schemas";
-import { HonoContext } from "@/server/lib/types";
+import { HonoContext } from "@/server/types";
 
 export async function forgotPasswordLogic(c: HonoContext) {
 	const data = await c.req.json();
@@ -38,7 +38,7 @@ export async function forgotPasswordLogic(c: HonoContext) {
 	});
 
 	const emailHtmlString = await htmlToString("forgot-password");
-	const resetPasswordLink = `${env.BASE_URL}/reset-password?email=${data.email}&token=${passwordResetToken}`;
+	const resetPasswordLink = `${env.BASE_URL}/change-password?email=${data.email}&token=${passwordResetToken}`;
 
 	const sendEmailResponse = await sendEmail({
 		to: data.email,

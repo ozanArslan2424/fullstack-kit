@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
 import { useRouter } from "@/client/hooks/use-router";
-import { app } from "@/client/lib/config";
 import { sendRequest } from "@/client/utils/send-request";
+import { profileSchema } from "@/lib/schemas";
 
 type Role = "logged-in" | "logged-out" | "admin" | "no-guard";
 
-export type ProfileData = z.infer<typeof app.server.profile.schema>;
+export type ProfileData = z.infer<typeof profileSchema>;
 
 export function useGuard(
 	only: Role = "no-guard",
@@ -15,11 +15,18 @@ export function useGuard(
 ): ProfileData | undefined {
 	const router = useRouter();
 	const { data, isSuccess, isPending } = useQuery<ProfileData>({
-		queryKey: [app.server.profile.path],
-		queryFn: () =>
-			sendRequest(app.server.profile.path, {
-				method: app.server.profile.method,
-			}),
+		queryKey: ["profile"],
+		queryFn: async () => {
+			const { data, res } = await sendRequest("/api/auth/profile", {
+				method: "GET",
+			});
+
+			if (!res.ok) {
+				throw new Error(data.message);
+			}
+
+			return data;
+		},
 		retry: false,
 		staleTime: Infinity,
 		refetchOnWindowFocus: false,

@@ -1,30 +1,25 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
+import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
+import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { app } from "@/client/lib/config";
-import { sendRequest } from "@/client/utils/send-request";
-
-type RegisterFormValues = z.infer<typeof app.server.register.schema>;
+import { registerSchema } from "@/lib/schemas";
 
 export function RegisterForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { errors, isPending, safeSubmit } = useForm<RegisterFormValues, void>({
-		schema: app.server.register.schema,
-		mutationKey: [app.server.register.path],
-		mutationFn: (data: RegisterFormValues) =>
-			sendRequest(app.server.register.path, {
-				method: app.server.register.method,
-				body: JSON.stringify(data),
-			}),
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: [app.server.profile.path],
-			});
-			router.push("/profile");
-		},
+	const { mutate, isPending } = useRequest({
+		path: "/api/auth/register",
+		options: { method: "POST" },
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["profile"] }).then(() => router.push("/")),
+		onError: ({ message }) => toast.error(message),
+	});
+
+	const { errors, safeSubmit } = useForm({
+		schema: registerSchema,
+		next: mutate,
 	});
 
 	return (

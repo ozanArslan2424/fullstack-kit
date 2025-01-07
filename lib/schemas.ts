@@ -34,3 +34,14 @@ export const verifyEmailSchema = authBaseSchema.pick({ email: true }).extend({
 });
 
 export const verifyEmailResendSchema = authBaseSchema.pick({ email: true });
+
+export const profileSchema = z.object({
+	id: z.string().uuid(),
+	email: z.string().email(),
+	name: z.string(),
+	image: z.string().nullable(),
+	about: z.string().nullable(),
+	emailVerified: z.boolean(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});

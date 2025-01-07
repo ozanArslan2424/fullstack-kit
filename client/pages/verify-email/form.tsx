@@ -1,34 +1,39 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
+import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { app } from "@/client/lib/config";
 import { sendRequest } from "@/client/utils/send-request";
+import { verifyEmailSchema } from "@/lib/schemas";
 
 export function VerifyEmailForm({ email, token }: { email: string | null; token: string | null }) {
 	const [emailState, setEmail] = useState(email);
 
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
-	const { errors, isPending, safeSubmit } = useForm({
-		schema: app.server.verifyEmail.schema,
-		mutationFn: (data) =>
-			sendRequest(app.server.verifyEmail.path, {
-				method: app.server.verifyEmail.method,
-				body: JSON.stringify(data),
-			}),
+	const { mutate, isPending } = useRequest({
+		path: "/api/auth/verify-email",
+		options: { method: "POST" },
+		onError: ({ message }) => toast.error(message),
 		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["profile"] });
 			toast.success("Email verified.");
 			router.push("/profile");
 		},
 	});
 
+	const { errors, safeSubmit } = useForm({
+		schema: verifyEmailSchema,
+		next: mutate,
+	});
+
 	async function handleResend(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		e.preventDefault();
-		const data = { email: emailState };
-		const res = await fetch(app.server.verifyEmailResend.path, {
-			method: app.server.verifyEmailResend.method,
-			body: JSON.stringify(data),
+		const { res } = await sendRequest("/api/auth/verify-email-resend", {
+			method: "POST",
+			body: JSON.stringify({ email: emailState }),
 		});
 
 		if (res.ok) {

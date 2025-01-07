@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
+import { ONE_DAY } from "@/lib/constants";
+import { log } from "@/lib/log";
+import { verifyEmailResendSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";
-import { ONE_DAY } from "@/server/lib/constants";
-import { verifyEmailResendSchema } from "@/server/lib/schemas";
-import { HonoContext } from "@/server/lib/types";
-import { log } from "@/server/lib/utils";
-import { sendVerificationEmail } from "@/server/lib/utils";
+import { sendVerificationEmail } from "@/server/routes/auth/auth-utils";
+import { HonoContext } from "@/server/types";
 
 export async function verifyEmailResendLogic(c: HonoContext) {
 	const data = await c.req.json();
@@ -33,12 +33,7 @@ export async function verifyEmailResendLogic(c: HonoContext) {
 	const verificationToken = crypto.randomUUID();
 
 	await db.transaction(async (tx) => {
-		await tx
-			.update(table.account)
-			.set({
-				emailVerified: false,
-			})
-			.where(eq(table.account.userId, userId));
+		await tx.update(table.user).set({ emailVerified: false }).where(eq(table.user.id, userId));
 		await tx.delete(table.verification).where(eq(table.verification.userId, userId));
 		await tx.insert(table.verification).values({
 			id: crypto.randomUUID(),

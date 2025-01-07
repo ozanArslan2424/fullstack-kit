@@ -1,10 +1,15 @@
 import { eq } from "drizzle-orm";
 import { setCookie } from "hono/cookie";
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
+import { log } from "@/lib/log";
+import { loginSchema } from "@/lib/schemas";
 import { db, table } from "@/server/db";
-import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
-import { loginSchema } from "@/server/lib/schemas";
-import { HonoContext } from "@/server/lib/types";
-import { createSession, generateSessionToken, log, verifyPassword } from "@/server/lib/utils";
+import {
+	createSession,
+	generateSessionToken,
+	verifyPassword,
+} from "@/server/routes/auth/auth-utils";
+import { HonoContext } from "@/server/types";
 
 export async function loginLogic(c: HonoContext) {
 	const user = c.get("user");
