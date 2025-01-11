@@ -1,27 +1,19 @@
-import { createRouter } from "@/server/create-app";
-import { changePasswordLogic } from "./change-password.post";
-import { forgotPasswordLogic } from "./forgot-password.post";
-import { loginLogic } from "./login.post";
-import { logoutLogic } from "./logout.post";
-import { profileLogic } from "./profile.get";
-import { registerLogic } from "./register.post";
-import { verifyEmailResendLogic } from "./verify-email-resend.post";
-import { verifyEmailLogic } from "./verify-email.post";
+import { createRouter } from "@/server/lib/create-router";
+import { authChangePasswordPost } from "./change-password.post";
+import { authForgotPasswordPost } from "./forgot-password.post";
+import { authLoginPost } from "./login.post";
+import { authLogoutPost } from "./logout.post";
+import { authProfileGet } from "./profile.get";
+import { authRegisterPost } from "./register.post";
+import { authVerifyEmailResendPost } from "./verify-email-resend.post";
+import { authVerifyEmailPost } from "./verify-email.post";
 
 export const authRoutes = createRouter()
-	//*------------------------------------------------------------------- Register
-	.post("/register", registerLogic)
-	//*------------------------------------------------------------------- Login
-	.post("/login", loginLogic)
-	//*------------------------------------------------------------------- Logout
-	.post("/logout", logoutLogic)
-	//*------------------------------------------------------------------- Verify Email
-	.post("/verify-email", verifyEmailLogic)
-	//*------------------------------------------------------------------- Verify Email Resend
-	.post("/verify-email-resend", verifyEmailResendLogic)
-	//*------------------------------------------------------------------- Forgot Password
-	.post("/forgot-password", forgotPasswordLogic)
-	//*------------------------------------------------------------------- Reset Password
-	.post("/change-password", changePasswordLogic)
-	//*------------------------------------------------------------------- Profile
-	.get("/profile", profileLogic);
+	.openapi(authLoginPost.route, authLoginPost.handler)
+	.openapi(authLogoutPost.route, authLogoutPost.handler)
+	.openapi(authRegisterPost.route, authRegisterPost.handler)
+	.openapi(authVerifyEmailPost.route, authVerifyEmailPost.handler)
+	.openapi(authVerifyEmailResendPost.route, authVerifyEmailResendPost.handler)
+	.openapi(authChangePasswordPost.route, authChangePasswordPost.handler)
+	.openapi(authForgotPasswordPost.route, authForgotPasswordPost.handler)
+	.openapi(authProfileGet.route, authProfileGet.handler);

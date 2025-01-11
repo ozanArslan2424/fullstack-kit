@@ -1,4 +1,4 @@
-import { boolean, enumLite, sqliteTable, text, timestamp } from "@/server/db/utils";
+import { boolean, enumLite, sqliteTable, text, timestamp } from "@/db/utils";
 
 export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),

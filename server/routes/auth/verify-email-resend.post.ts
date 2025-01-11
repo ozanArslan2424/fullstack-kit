@@ -1,23 +1,37 @@
+import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
+import { db, table } from "@/db";
+import { verifyEmailResendPostSchema } from "@/db/zod";
 import { ONE_DAY } from "@/lib/constants";
 import { log } from "@/lib/log";
-import { verifyEmailResendSchema } from "@/lib/schemas";
-import { db, table } from "@/server/db";
+import { HonoHandler } from "@/server/lib/types";
+import { json, messageSchema } from "@/server/lib/utils";
 import { sendVerificationEmail } from "@/server/routes/auth/auth-utils";
-import { HonoContext } from "@/server/types";
 
-export async function verifyEmailResendLogic(c: HonoContext) {
-	const data = await c.req.json();
-	const valid = verifyEmailResendSchema.safeParse(data);
+const route = createRoute({
+	tags: ["auth"],
+	path: "/verify-email-resend",
+	method: "post",
+	request: {
+		body: json.requestBody(
+			"authVerifyEmailResendPost Request Body",
+			verifyEmailResendPostSchema,
+		),
+	},
+	responses: {
+		200: json.response("Verification email resent", messageSchema),
+		404: json.notFound(),
+		500: json.internalServerError(),
+	},
+});
 
-	if (!valid.success) {
-		return c.json({ message: "Invalid data" }, 400);
-	}
+const handler: HonoHandler<typeof route> = async (c) => {
+	const data = c.req.valid("json");
 
 	const [existingUser] = await db
 		.select()
 		.from(table.user)
-		.where(eq(table.user.email, valid.data.email));
+		.where(eq(table.user.email, data.email));
 
 	const [existingAccount] = await db
 		.select()
@@ -25,7 +39,7 @@ export async function verifyEmailResendLogic(c: HonoContext) {
 		.where(eq(table.account.userId, existingUser.id));
 
 	if (!existingUser || !existingAccount) {
-		return c.json({ message: "Email not found" }, 400);
+		return c.json({ message: "Email not found" }, 404);
 	}
 
 	const userId = existingUser.id;
@@ -38,7 +52,7 @@ export async function verifyEmailResendLogic(c: HonoContext) {
 		await tx.insert(table.verification).values({
 			id: crypto.randomUUID(),
 			userId,
-			userEmail: valid.data.email,
+			userEmail: data.email,
 			token: verificationToken,
 			type: "email",
 			createdAt: new Date(),
@@ -46,7 +60,7 @@ export async function verifyEmailResendLogic(c: HonoContext) {
 		});
 	});
 
-	const sendEmailResponse = await sendVerificationEmail(valid.data.email, verificationToken);
+	const sendEmailResponse = await sendVerificationEmail(data.email, verificationToken);
 
 	if (sendEmailResponse.error) {
 		log.error(sendEmailResponse.error);
@@ -54,4 +68,6 @@ export async function verifyEmailResendLogic(c: HonoContext) {
 	}
 
 	return c.json({ message: "Email verification token sent." }, 200);
-}
+};
+
+export const authVerifyEmailResendPost = { route, handler };

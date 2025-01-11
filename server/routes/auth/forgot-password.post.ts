@@ -1,19 +1,30 @@
+import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { env } from "@/lib/env";
+import { db, table } from "@/db";
+import { forgotPasswordPostSchema } from "@/db/zod";
 import { ONE_DAY } from "@/lib/constants";
-import { forgotPasswordSchema } from "@/lib/schemas";
-import { db, table } from "@/server/db";
+import { env } from "@/lib/env";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
-import { HonoContext } from "@/server/types";
+import { HonoHandler } from "@/server/lib/types";
+import { json, messageSchema } from "@/server/lib/utils";
 
-export async function forgotPasswordLogic(c: HonoContext) {
-	const data = await c.req.json();
-	const valid = forgotPasswordSchema.safeParse(data);
+const route = createRoute({
+	tags: ["auth"],
+	path: "/forgot-password",
+	method: "post",
+	request: {
+		body: json.requestBody("Forgot Password Request Body", forgotPasswordPostSchema),
+	},
+	responses: {
+		200: json.response("Email sent", messageSchema),
+		404: json.notFound(),
+		500: json.internalServerError(),
+	},
+});
 
-	if (!valid.success) {
-		return c.json({ message: "Invalid data" }, 400);
-	}
+const handler: HonoHandler<typeof route> = async (c) => {
+	const data = c.req.valid("json");
 
 	const [existingUser] = await db
 		.select()
@@ -21,7 +32,7 @@ export async function forgotPasswordLogic(c: HonoContext) {
 		.where(eq(table.user.email, data.email));
 
 	if (!existingUser) {
-		return c.json({ message: "Email not found." }, 400);
+		return c.json({ message: "Email not found." }, 404);
 	}
 
 	const verificationRecordId = crypto.randomUUID();
@@ -59,4 +70,6 @@ export async function forgotPasswordLogic(c: HonoContext) {
 		.where(eq(table.account.userId, existingUser.id));
 
 	return c.json({ message: "Email sent." }, 200);
-}
+};
+
+export const authForgotPasswordPost = { route, handler };

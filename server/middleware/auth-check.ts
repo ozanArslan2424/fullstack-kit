@@ -2,10 +2,10 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import { log } from "@/lib/log";
+import { HonoBindings } from "@/server/lib/types";
 import { validateSessionToken } from "@/server/routes/auth/auth-utils";
-import { HonoType } from "@/server/types";
 
-export const authCheck = createMiddleware<HonoType>(async (c, next) => {
+export const authCheck = createMiddleware<HonoBindings>(async (c, next) => {
 	const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
 
 	if (!sessionToken) {

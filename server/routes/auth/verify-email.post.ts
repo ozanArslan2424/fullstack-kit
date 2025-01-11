@@ -1,23 +1,34 @@
+import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { verifyEmailSchema } from "@/lib/schemas";
-import { db, table } from "@/server/db";
-import { HonoContext } from "@/server/types";
+import { db, table } from "@/db";
+import { verifyEmailPostSchema } from "@/db/zod";
+import { HonoHandler } from "@/server/lib/types";
+import { json, messageSchema } from "@/server/lib/utils";
 
-export async function verifyEmailLogic(c: HonoContext) {
-	const data = await c.req.json();
-	const valid = verifyEmailSchema.safeParse(data);
+const route = createRoute({
+	tags: ["auth"],
+	path: "/verify-email",
+	method: "post",
+	request: {
+		body: json.requestBody("Verify Email Request Body", verifyEmailPostSchema),
+	},
+	responses: {
+		200: json.response("Email verified", messageSchema),
+		404: json.notFound(),
+		400: json.badRequest(),
+	},
+});
 
-	if (!valid.success) {
-		return c.json({ message: "Invalid data" }, 400);
-	}
+const handler: HonoHandler<typeof route> = async (c) => {
+	const data = c.req.valid("json");
 
 	const [verification] = await db
 		.select()
 		.from(table.verification)
-		.where(eq(table.verification.userEmail, valid.data.email));
+		.where(eq(table.verification.userEmail, data.userEmail));
 
 	if (!verification) {
-		return c.json({ message: "Invalid data." }, 400);
+		return c.json({ message: "Verification token not found" }, 404);
 	}
 
 	const tokenExpired = Date.now() >= verification.expiresAt.getTime();
@@ -26,7 +37,7 @@ export async function verifyEmailLogic(c: HonoContext) {
 		return c.json({ message: "Token expired." }, 400);
 	}
 
-	const tokenMatch = verification.token === valid.data.token;
+	const tokenMatch = verification.token === data.token;
 
 	if (!tokenMatch) {
 		return c.json({ message: "Invalid token." }, 400);
@@ -41,4 +52,6 @@ export async function verifyEmailLogic(c: HonoContext) {
 	});
 
 	return c.json({ message: "Email verified." }, 200);
-}
+};
+
+export const authVerifyEmailPost = { route, handler };

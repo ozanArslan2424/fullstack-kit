@@ -10,14 +10,14 @@ type ExtractSearchParams<P> = P extends `${infer _Start}?${infer Search}`
 	: { [k in string]: string };
 
 declare global {
-type ClientRoutePath = "/change-password" | "/forgot-password" | "/profile" | "/register" | "/" | "/login" | "/verify-email";
+type ClientRoutePath = "/register" | "/forgot-password" | "/login" | "/" | "/verify-email" | "/change-password" | "/profile";
 type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>;
 type ClientRouteSearchParam<P extends ClientRoutePath> = ExtractSearchParams<P>;
 
-type ServerRoutePath = "/api/auth/login" | "/api/auth/logout" | "/api/auth/profile" | "/api/auth/verify-email-resend" | "/api/auth/change-password" | "/api/auth/verify-email" | "/api/auth/register" | "/api/auth/forgot-password";
+type ServerRoutePath = "/api/auth/verify-email-resend" | "/api/auth/logout" | "/api/auth/login" | "/api/auth/forgot-password" | "/api/auth/register" | "/api/auth/change-password" | "/api/auth/profile" | "/api/auth/verify-email";
 type ServerRoutePathParam<P extends ServerRoutePath> = ExtractRouteParams<P>;
 type ServerRouteSearchParam<P extends ServerRoutePath> = ExtractSearchParams<P>;
 }
 
-export const clientRoutePaths:ClientRoutePath[] = ["/change-password","/forgot-password","/profile","/register","/","/login","/verify-email"];
-export const serverRoutePaths:ServerRoutePath[] = ["/api/auth/login","/api/auth/logout","/api/auth/profile","/api/auth/verify-email-resend","/api/auth/change-password","/api/auth/verify-email","/api/auth/register","/api/auth/forgot-password"];
+export const clientRoutePaths:ClientRoutePath[] = ["/register","/forgot-password","/login","/","/verify-email","/change-password","/profile"];
+export const serverRoutePaths:ServerRoutePath[] = ["/api/auth/verify-email-resend","/api/auth/logout","/api/auth/login","/api/auth/forgot-password","/api/auth/register","/api/auth/change-password","/api/auth/profile","/api/auth/verify-email"];

@@ -1,23 +1,26 @@
 import { serveStatic } from "hono/bun";
+import { env } from "@/lib/env";
 import { log } from "@/lib/log";
-import { createApp } from "@/server/create-app";
+import { configureMiddleware } from "@/server/lib/configure-middleware";
+import { configureOpenAPI } from "@/server/lib/configure-openapi";
+import { createRouter } from "@/server/lib/create-router";
 import { authRoutes } from "@/server/routes/auth";
 import "@/watcher/watch-routes";
 
-//*------------------------------------------ App setup
-const app = createApp();
+const app = createRouter().basePath("/api");
+
+configureOpenAPI(app);
+configureMiddleware(app);
+
 log.clear();
 log.start("🚀 Let's go!");
 
-//*------------------------------------------ API Routes
-app.basePath("/api").route("/auth", authRoutes);
-
-//*------------------------------------------ Static Routes
 app.get("*", serveStatic({ root: "./dist" }));
 app.get("*", serveStatic({ path: "./dist/index.html" }));
 
-//*------------------------------------------ Start the server
+app.route("/auth", authRoutes);
+
 export default {
-	port: 3000,
 	fetch: app.fetch,
+	port: Number(env.PORT) || 3000,
 };

@@ -1,8 +1,8 @@
 import { env } from "bun";
 import { eq } from "drizzle-orm";
+import { db, table } from "@/db";
+import { SessionSelect } from "@/db/types";
 import { ONE_DAY } from "@/lib/constants";
-import { db, table } from "@/server/db";
-import { SessionSelect } from "@/server/db/types";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
 

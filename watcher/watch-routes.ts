@@ -100,8 +100,6 @@ w.on("add", (fp) => {
 		serverMap.add(route.path);
 	}
 
-	log.debug("map", serverMap);
-	log.count("--");
 	writeGeneratedFile();
 });
 
@@ -115,8 +113,7 @@ w.on("unlink", (fp) => {
 		if (!route) return;
 		serverMap.delete(route.path);
 	}
-	log.debug("map", serverMap);
-	log.count("--");
+
 	writeGeneratedFile();
 });
 
@@ -138,8 +135,7 @@ w.on("rename", (fp, newFp) => {
 		if (!newRoute) return;
 		serverMap.add(newRoute.path);
 	}
-	log.debug("map", serverMap);
-	log.count("--");
+
 	writeGeneratedFile();
 });
 
@@ -152,8 +148,6 @@ w.on("unlinkDir", (dir) => {
 		serverMap = new Set([...serverMap].filter((route) => !route.startsWith(dirPath)));
 	}
 
-	log.debug("map", { clientMap, serverMap });
-	log.count("--");
 	writeGeneratedFile();
 });
 
@@ -182,7 +176,5 @@ w.on("renameDir", (dir, newDir) => {
 		});
 	}
 
-	log.debug("map", { clientMap, serverMap });
-	log.count("--");
 	writeGeneratedFile();
 });
