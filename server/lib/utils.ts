@@ -10,7 +10,8 @@ export const json = {
 	notFound: () => jsonContent(messageSchema, "Not found."),
 	badRequest: () => jsonContent(messageSchema, "Bad request."),
 	unauthorized: () => jsonContent(messageSchema, "Unauthorized."),
-	response: <T = any>(description: string, schema: ZodType<T>) => jsonContent(schema, description),
+	response: <T = any>(description: string, schema: ZodType<T>) =>
+		jsonContent(schema, description),
 	requestBody: <T = any>(description: string, schema: ZodType<T>) =>
 		jsonContent(schema, description),
 	unprocessableEntity: (schema: ZodType) =>

@@ -12,7 +12,7 @@ type UseRequestOptions<TValues, TData> = {
 	optimisticUpdate?: (values: TValues) => void;
 };
 
-export function useRequest<TValues, TData>({
+export function useRequest<TValues, TData = any>({
 	path,
 	options,
 	onSuccess,

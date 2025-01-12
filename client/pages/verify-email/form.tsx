@@ -1,11 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { sendRequest } from "@/client/utils/send-request";
-import { verifyEmailSchema } from "@/lib/schemas";
+import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/db/zod";
+
+type VerifyEmailPostValues = z.infer<typeof verifyEmailPostSchema>;
+type VerifyEmailResendPostValues = z.infer<typeof verifyEmailResendPostSchema>;
 
 export function VerifyEmailForm({ email, token }: { email: string | null; token: string | null }) {
 	const [emailState, setEmail] = useState(email);
@@ -13,34 +16,39 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { mutate, isPending } = useRequest({
+	const { mutate, isPending } = useRequest<VerifyEmailPostValues>({
 		path: "/api/auth/verify-email",
 		options: { method: "POST" },
 		onError: ({ message }) => toast.error(message),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["profile"] });
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["profile"] });
 			toast.success("Email verified.");
 			router.push("/profile");
 		},
 	});
 
 	const { errors, safeSubmit } = useForm({
-		schema: verifyEmailSchema,
+		schema: verifyEmailPostSchema,
 		next: mutate,
 	});
 
-	async function handleResend(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-		e.preventDefault();
-		const { res } = await sendRequest("/api/auth/verify-email-resend", {
-			method: "POST",
-			body: JSON.stringify({ email: emailState }),
+	const { mutate: mutateResend, isPending: isPendingResend } =
+		useRequest<VerifyEmailResendPostValues>({
+			path: "/api/auth/verify-email-resend",
+			options: { method: "POST" },
+			onError: ({ message }) => toast.error(message),
+			onSuccess: () => toast.success("Verification email sent."),
 		});
 
-		if (res.ok) {
-			toast.success("Verification email sent.");
-		} else {
-			toast.error("Failed to send verification email.");
+	async function handleResend(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+		e.preventDefault();
+
+		if (!emailState) {
+			toast.error("Please enter your email.");
+			return;
 		}
+
+		mutateResend({ email: emailState });
 	}
 
 	return (
@@ -52,17 +60,17 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 			)}
 
 			<fieldset>
-				<label htmlFor="email">Email</label>
+				<label htmlFor="userEmail">Email</label>
 				<input
 					type="email"
-					id="email"
-					name="email"
+					id="userEmail"
+					name="userEmail"
 					autoComplete="email"
 					autoFocus={true}
 					onChange={(e) => setEmail(e.target.value)}
 					value={emailState || ""}
 				/>
-				<label htmlFor="email">{errors.email}</label>
+				<label htmlFor="userEmail">{errors.userEmail}</label>
 			</fieldset>
 
 			<fieldset>
@@ -76,7 +84,9 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 			</button>
 
 			<button type="button" className="sm ghost w-full" onClick={handleResend}>
-				If you haven't received a token or link, enter your email and click here.
+				{isPendingResend
+					? "Loading..."
+					: "If you haven't received a token or link, enter your email and click here."}
 			</button>
 		</form>
 	);

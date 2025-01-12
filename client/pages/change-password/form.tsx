@@ -5,7 +5,7 @@ import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
 import { sendRequest } from "@/client/utils/send-request";
-import { changePasswordSchema } from "@/lib/schemas";
+import { changePasswordPostSchema } from "@/db/zod";
 
 export function ChangePasswordForm() {
 	const router = useRouter();
@@ -27,14 +27,13 @@ export function ChangePasswordForm() {
 		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			toast.success("Password changed.");
-			sendRequest("/api/auth/logout", { method: "POST" }).then((res) => {
-				router.push("/login");
-			});
+			await sendRequest("/api/auth/logout", { method: "POST" });
+			router.push("/login");
 		},
 	});
 
 	const { errors, safeSubmit } = useForm({
-		schema: changePasswordSchema,
+		schema: changePasswordPostSchema,
 		next: mutate,
 	});
 
@@ -49,16 +48,16 @@ export function ChangePasswordForm() {
 			)}
 
 			<fieldset>
-				<label htmlFor="email">Email</label>
+				<label htmlFor="userEmail">Email</label>
 				<input
 					type="email"
-					id="email"
-					name="email"
+					id="userEmail"
+					name="userEmail"
 					autoComplete="email"
 					defaultValue={email}
 					autoFocus={true}
 				/>
-				<label htmlFor="email">{errors.email}</label>
+				<label htmlFor="userEmail">{errors.userEmail}</label>
 			</fieldset>
 
 			<fieldset>

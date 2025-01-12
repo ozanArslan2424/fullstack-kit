@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { useRouter } from "@/client/hooks/use-router";
 import { sendRequest } from "@/client/utils/send-request";
-import { profileSchema } from "@/lib/schemas";
+import { profileGetSchema } from "@/db/zod";
 
 type Role = "logged-in" | "logged-out" | "admin" | "no-guard";
 
-export type ProfileData = z.infer<typeof profileSchema>;
+export type ProfileData = z.infer<typeof profileGetSchema>;
 
 export function useGuard(
 	only: Role = "no-guard",

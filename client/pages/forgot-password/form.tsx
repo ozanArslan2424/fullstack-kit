@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
-import { forgotPasswordSchema } from "@/lib/schemas";
+import { forgotPasswordPostSchema } from "@/db/zod";
 
 export function ForgotPasswordForm() {
 	const { mutate, isPending } = useRequest({
@@ -11,7 +11,7 @@ export function ForgotPasswordForm() {
 	});
 
 	const { errors, safeSubmit } = useForm({
-		schema: forgotPasswordSchema,
+		schema: forgotPasswordPostSchema,
 		next: mutate,
 	});
 

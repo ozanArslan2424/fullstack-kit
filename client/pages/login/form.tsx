@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { loginSchema } from "@/lib/schemas";
+import { loginPostSchema } from "@/db/zod";
 
 export function LoginForm() {
 	const router = useRouter();
@@ -12,13 +12,15 @@ export function LoginForm() {
 	const { mutate, isPending } = useRequest({
 		path: "/api/auth/login",
 		options: { method: "POST" },
-		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["profile"] }).then(() => router.push("/")),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["profile"] });
+			router.push("/");
+		},
 		onError: ({ message }) => toast.error(message),
 	});
 
 	const { errors, safeSubmit } = useForm({
-		schema: loginSchema,
+		schema: loginPostSchema,
 		next: mutate,
 	});
 	return (

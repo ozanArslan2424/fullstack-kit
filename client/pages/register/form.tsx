@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { registerSchema } from "@/lib/schemas";
+import { registerPostSchema } from "@/db/zod";
 
 export function RegisterForm() {
 	const router = useRouter();
@@ -12,13 +12,15 @@ export function RegisterForm() {
 	const { mutate, isPending } = useRequest({
 		path: "/api/auth/register",
 		options: { method: "POST" },
-		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["profile"] }).then(() => router.push("/")),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["profile"] });
+			router.push("/");
+		},
 		onError: ({ message }) => toast.error(message),
 	});
 
 	const { errors, safeSubmit } = useForm({
-		schema: registerSchema,
+		schema: registerPostSchema,
 		next: mutate,
 	});
 
@@ -31,15 +33,9 @@ export function RegisterForm() {
 			)}
 
 			<fieldset>
-				<label htmlFor="username">Username</label>
-				<input
-					id="username"
-					name="username"
-					type="text"
-					autoComplete="username"
-					autoFocus={true}
-				/>
-				<label htmlFor="username">{errors.username}</label>
+				<label htmlFor="name">Username</label>
+				<input id="name" name="name" type="text" autoComplete="username" autoFocus={true} />
+				<label htmlFor="name">{errors.name}</label>
 			</fieldset>
 
 			<fieldset>

@@ -1,13 +1,14 @@
+import config from "app.config";
 import { serveStatic } from "hono/bun";
 import { env } from "@/lib/env";
 import { log } from "@/lib/log";
+import "@/scripts/watch-routes";
 import { configureMiddleware } from "@/server/lib/configure-middleware";
 import { configureOpenAPI } from "@/server/lib/configure-openapi";
 import { createRouter } from "@/server/lib/create-router";
 import { authRoutes } from "@/server/routes/auth";
-import "@/watcher/watch-routes";
 
-const app = createRouter().basePath("/api");
+const app = createRouter().basePath(config.server.routes.basePath);
 
 configureOpenAPI(app);
 configureMiddleware(app);

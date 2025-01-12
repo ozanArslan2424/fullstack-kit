@@ -1,24 +1,41 @@
 import Watcher from "watcher";
+import config from "@/app.config";
 import { log } from "@/lib/log";
-import config from "@/routes.config";
-import { pathToPascalCase } from "./utils";
+
+const serverRouteRegex = /^(.*)\.(get|post|put|delete|patch|options)\.ts$/;
+const serverBasePath = config.server.routes.basePath ?? "";
 
 let clientMap = new Set<string>([]);
 let serverMap = new Set<string>([]);
 
-const w = new Watcher([config.server.routesDir, config.client.routesDir], {
+const w = new Watcher([config.server.routes.path, config.client.routes.path], {
 	recursive: true,
 	renameDetection: true,
 	ignoreInitial: false,
 });
 
-export const serverRouteRegex = /^(.*)\.(get|post|put|delete|patch|options)\.ts$/;
-export const serverRoutePrefix = config.server.routePrefix ?? "";
+w.on("ready", () => log.start("👀 Watching routes..."));
+w.on("error", log.error);
+w.on("close", () => log.end("👋 Stopped watching routes..."));
 
-export function makeClientRoute(fp: string) {
-	const filePath = String(fp.replace(config.client.routesDir, ""));
-	const prefixed = config.ignoreFilePrefixes.some((prefix) => filePath.charAt(1) === prefix);
-	const isRouteFile = config.client.routeFileNames.some((name) => {
+function replaceClientRoutePrefix(dir: string) {
+	return String(dir.replace(config.client.routes.path, ""));
+}
+
+function replaceServerRoutePrefix(dir: string) {
+	return String(dir.replace(config.server.routes.path, ""));
+}
+
+function pathToPascalCase(str: string): string {
+	return str.replaceAll("/", "-").replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function makeClientRoute(fp: string) {
+	const filePath = replaceClientRoutePrefix(fp);
+	const prefixed = config.generated.ignoredPrefixes.some(
+		(prefix) => filePath.charAt(1) === prefix,
+	);
+	const isRouteFile = config.client.routes.routeFileNames.some((name) => {
 		if (name.startsWith("*")) {
 			return filePath.endsWith(name.slice(1));
 		}
@@ -27,7 +44,7 @@ export function makeClientRoute(fp: string) {
 	const isInvalid = prefixed || !isRouteFile || filePath.endsWith(".DS_Store");
 	if (isInvalid) return;
 
-	const isIndexRoute = config.client.indexRouteDirNames.some((name) =>
+	const isIndexRoute = config.client.routes.indexRouteDirNames.some((name) =>
 		filePath.startsWith("/" + name),
 	);
 	const name = pathToPascalCase(filePath.replace("/index.tsx", ""));
@@ -36,10 +53,10 @@ export function makeClientRoute(fp: string) {
 	return { name, path };
 }
 
-export function makeServerRoute(fp: string) {
-	const filePath = serverRoutePrefix + String(fp.replace(config.server.routesDir, ""));
+function makeServerRoute(fp: string) {
+	const filePath = serverBasePath + replaceServerRoutePrefix(fp);
 	const fileName = String(filePath.split("/").pop());
-	const prefixed = config.ignoreFilePrefixes.some((prefix) => fileName.startsWith(prefix));
+	const prefixed = config.generated.ignoredPrefixes.some((prefix) => fileName.startsWith(prefix));
 	const notRouteFile = !serverRouteRegex.test(fileName);
 	const isInvalid = prefixed || notRouteFile || filePath.endsWith(".DS_Store");
 
@@ -52,10 +69,7 @@ export function makeServerRoute(fp: string) {
 	return { name, path, method };
 }
 
-export async function writeGeneratedFile() {
-	const extractTypes = `
-`;
-
+async function writeGeneratedFile() {
 	const clientGlobalTypes = `
 type ClientRoutePath = ${[...clientMap].map((path) => `"${path}"`).join(" | ")};
 type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>;
@@ -82,15 +96,11 @@ declare global {${clientMap.size === 0 ? "" : clientGlobalTypes}\n${serverMap.si
 export const clientRoutePaths:ClientRoutePath[] = ${JSON.stringify([...clientMap])};
 export const serverRoutePaths:ServerRoutePath[] = ${JSON.stringify([...serverMap])};`;
 
-	await Bun.write(config.generatedFilePath, content);
+	await Bun.write(config.generated.path, content);
 }
 
-w.on("ready", () => log.start("👀 Watching routes..."));
-w.on("error", log.error);
-w.on("close", () => log.end("👋 Stopped watching routes..."));
-
 w.on("add", (fp) => {
-	if (fp.includes(config.client.routesDir)) {
+	if (fp.includes(config.client.routes.path)) {
 		const route = makeClientRoute(fp);
 		if (!route) return;
 		clientMap.add(route.path);
@@ -104,7 +114,7 @@ w.on("add", (fp) => {
 });
 
 w.on("unlink", (fp) => {
-	if (fp.includes(config.client.routesDir)) {
+	if (fp.includes(config.client.routes.path)) {
 		const route = makeClientRoute(fp);
 		if (!route) return;
 		clientMap.delete(route.path);
@@ -118,7 +128,7 @@ w.on("unlink", (fp) => {
 });
 
 w.on("rename", (fp, newFp) => {
-	if (fp.includes(config.client.routesDir)) {
+	if (fp.includes(config.client.routes.path)) {
 		const route = makeClientRoute(fp);
 		const newRoute = makeClientRoute(newFp);
 		if (route) {
@@ -140,11 +150,11 @@ w.on("rename", (fp, newFp) => {
 });
 
 w.on("unlinkDir", (dir) => {
-	if (dir.includes(config.client.routesDir)) {
-		const dirPath = String(dir.replace(config.client.routesDir, ""));
+	if (dir.includes(config.client.routes.path)) {
+		const dirPath = replaceClientRoutePrefix(dir);
 		clientMap = new Set([...clientMap].filter((route) => !route.startsWith(dirPath)));
 	} else {
-		const dirPath = serverRoutePrefix + String(dir.replace(config.server.routesDir, ""));
+		const dirPath = serverBasePath + replaceServerRoutePrefix(dir);
 		serverMap = new Set([...serverMap].filter((route) => !route.startsWith(dirPath)));
 	}
 
@@ -152,9 +162,9 @@ w.on("unlinkDir", (dir) => {
 });
 
 w.on("renameDir", (dir, newDir) => {
-	if (dir.includes(config.client.routesDir)) {
-		const dirPath = String(dir.replace(config.client.routesDir, ""));
-		const newDirPath = String(newDir.replace(config.client.routesDir, ""));
+	if (dir.includes(config.client.routes.path)) {
+		const dirPath = replaceClientRoutePrefix(dir);
+		const newDirPath = replaceClientRoutePrefix(newDir);
 
 		[...clientMap].map((path) => {
 			if (path.startsWith(dirPath)) {
@@ -164,8 +174,8 @@ w.on("renameDir", (dir, newDir) => {
 			}
 		});
 	} else {
-		const dirPath = serverRoutePrefix + String(dir.replace(config.server.routesDir, ""));
-		const newDirPath = serverRoutePrefix + String(newDir.replace(config.server.routesDir, ""));
+		const dirPath = serverBasePath + replaceServerRoutePrefix(dir);
+		const newDirPath = serverBasePath + replaceServerRoutePrefix(newDir);
 
 		[...serverMap].map((path) => {
 			if (path.startsWith(dirPath)) {
