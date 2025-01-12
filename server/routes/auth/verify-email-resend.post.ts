@@ -1,9 +1,9 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { db, table } from "@/db";
-import { verifyEmailResendPostSchema } from "@/db/zod";
 import { ONE_DAY } from "@/lib/constants";
 import { log } from "@/lib/log";
+import { verifyEmailResendPostSchema } from "@/lib/zod";
+import { db, table } from "@/server/db";
 import { HonoHandler } from "@/server/lib/types";
 import { json, messageSchema } from "@/server/lib/utils";
 import { sendVerificationEmail } from "@/server/routes/auth/auth-utils";

@@ -5,7 +5,7 @@ import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
 import { sendRequest } from "@/client/utils/send-request";
-import { changePasswordPostSchema } from "@/db/zod";
+import { changePasswordPostSchema } from "@/lib/zod";
 
 export function ChangePasswordForm() {
 	const router = useRouter();

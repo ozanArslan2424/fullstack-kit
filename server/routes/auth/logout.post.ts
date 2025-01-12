@@ -1,8 +1,8 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { deleteCookie } from "hono/cookie";
-import { db, table } from "@/db";
 import { SESSION_COOKIE_NAME } from "@/lib/constants";
+import { db, table } from "@/server/db";
 import { HonoHandler } from "@/server/lib/types";
 import { json, messageSchema } from "@/server/lib/utils";
 

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import * as schemas from "./zod";
+import * as schemas from "@/lib/zod";
 
 export type ProfilePostType = z.infer<typeof schemas.profilePostSchema>;
 export type ProfileGetType = z.infer<typeof schemas.profileGetSchema>;

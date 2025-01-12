@@ -1,10 +1,10 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { setCookie } from "hono/cookie";
-import { db, table } from "@/db";
-import { registerPostSchema } from "@/db/zod";
 import { ONE_DAY, SESSION_COOKIE_NAME } from "@/lib/constants";
 import { log } from "@/lib/log";
+import { registerPostSchema } from "@/lib/zod";
+import { db, table } from "@/server/db";
 import { HonoHandler } from "@/server/lib/types";
 import { json, messageSchema } from "@/server/lib/utils";
 import {

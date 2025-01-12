@@ -1,6 +1,6 @@
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
-import { table } from ".";
+import { table } from "../server/db";
 
 export const profilePostSchema = createInsertSchema(table.user);
 export const profileGetSchema = createSelectSchema(table.user);

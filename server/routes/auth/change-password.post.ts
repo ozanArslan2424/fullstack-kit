@@ -1,7 +1,7 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { db, table } from "@/db";
-import { changePasswordPostSchema } from "@/db/zod";
+import { changePasswordPostSchema } from "@/lib/zod";
+import { db, table } from "@/server/db";
 import { HonoHandler } from "@/server/lib/types";
 import { json, messageSchema } from "@/server/lib/utils";
 import { hashPassword } from "@/server/routes/auth/auth-utils";

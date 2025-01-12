@@ -1,7 +1,7 @@
 import { OpenAPIHono, type RouteConfig, type RouteHandler } from "@hono/zod-openapi";
 import { Context } from "hono";
 import { PinoLogger } from "hono-pino";
-import { ProfileGetType, SessionGetType } from "@/db/types";
+import { ProfileGetType, SessionGetType } from "@/lib/types";
 
 export interface HonoBindings {
 	Variables: {

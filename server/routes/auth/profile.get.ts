@@ -1,5 +1,5 @@
 import { createRoute } from "@hono/zod-openapi";
-import { profileGetSchema } from "@/db/zod";
+import { profileGetSchema } from "@/lib/zod";
 import { HonoHandler } from "@/server/lib/types";
 import { json } from "@/server/lib/utils";
 

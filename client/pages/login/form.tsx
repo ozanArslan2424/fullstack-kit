@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { loginPostSchema } from "@/db/zod";
+import { loginPostSchema } from "@/lib/zod";
 
 export function LoginForm() {
 	const router = useRouter();

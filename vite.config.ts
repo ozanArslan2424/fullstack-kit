@@ -7,6 +7,9 @@ export default defineConfig({
 	build: {
 		cssMinify: "lightningcss",
 		manifest: true,
+		rollupOptions: {
+			treeshake: "recommended",
+		},
 	},
 	server: {
 		proxy: {

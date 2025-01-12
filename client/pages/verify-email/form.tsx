@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
 import { useRouter } from "@/client/hooks/use-router";
-import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/db/zod";
+import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/lib/zod";
 
 type VerifyEmailPostValues = z.infer<typeof verifyEmailPostSchema>;
 type VerifyEmailResendPostValues = z.infer<typeof verifyEmailResendPostSchema>;

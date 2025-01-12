@@ -20,12 +20,12 @@ export default defineAppConfig({
 			path: "/server/routes",
 			basePath: "/api",
 		},
-	},
-	db: {
-		path: "/db",
-		schema: "/db/schema.ts",
-		out: "/db/drizzle-out",
-		sqlite: "/sqlite.db",
+		db: {
+			path: "/server/db",
+			schema: "/server/db/schema.ts",
+			out: "/server/db/drizzle-out",
+			sqlite: "/sqlite.db",
+		},
 	},
 	lib: { path: "/lib" },
 });

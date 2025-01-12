@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { useRouter } from "@/client/hooks/use-router";
 import { sendRequest } from "@/client/utils/send-request";
-import { profileGetSchema } from "@/db/zod";
+import { profileGetSchema } from "@/lib/zod";
 
 type Role = "logged-in" | "logged-out" | "admin" | "no-guard";
 

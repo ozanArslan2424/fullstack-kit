@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useForm } from "@/client/hooks/use-form";
 import { useRequest } from "@/client/hooks/use-request";
-import { forgotPasswordPostSchema } from "@/db/zod";
+import { forgotPasswordPostSchema } from "@/lib/zod";
 
 export function ForgotPasswordForm() {
 	const { mutate, isPending } = useRequest({

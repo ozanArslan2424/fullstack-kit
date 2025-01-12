@@ -1,9 +1,9 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { db, table } from "@/db";
-import { forgotPasswordPostSchema } from "@/db/zod";
 import { ONE_DAY } from "@/lib/constants";
 import { env } from "@/lib/env";
+import { forgotPasswordPostSchema } from "@/lib/zod";
+import { db, table } from "@/server/db";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
 import { HonoHandler } from "@/server/lib/types";
