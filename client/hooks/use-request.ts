@@ -26,7 +26,12 @@ export function useRequest<TValues = void, TData = any>({
 				body: JSON.stringify(values),
 				headers: { "Content-Type": "application/json" },
 			}),
-		onSuccess: ({ data, res }) => onSuccess?.(data, res),
+		onSuccess: async ({ data, res }) => {
+			if (!res.ok) {
+				throw new Error((data as { message: string }).message);
+			}
+			onSuccess?.(data, res);
+		},
 		onError: onError === "throw" ? undefined : onError,
 		throwOnError: onError === "throw",
 		onMutate: optimisticUpdate,

@@ -19,8 +19,7 @@ export function useMediaQuery(breakpoint: keyof typeof BREAKPOINTS) {
 		mql.addEventListener("change", onChange);
 		setUnderBreakpoint(window.innerWidth < BREAKPOINTS[breakpoint]);
 		return () => mql.removeEventListener("change", onChange);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [breakpoint]);
 
 	return !!underBreakpoint;
 }

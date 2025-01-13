@@ -6,9 +6,9 @@ import { RequestOptions, RequestReturn, sendRequest } from "@/lib/send-request";
 type Res<T> = Awaited<RequestReturn<T>>["res"];
 type Data<T> = Awaited<RequestReturn<T>>["data"];
 
-type FieldErrors<T> = ZodError<T>["formErrors"]["fieldErrors"] & { root?: string };
+type FieldErrors<T> = ZodError<T>["formErrors"]["fieldErrors"] & { root?: string[] };
 
-type UseRequestFormOptions<TValues, TData> = {
+type UseRequestFormOptions<TValues, TData = unknown> = {
 	path: ServerRoutePath;
 	schema?: ZodType<TValues>;
 	options?: RequestOptions;
@@ -17,7 +17,7 @@ type UseRequestFormOptions<TValues, TData> = {
 	optimisticUpdate?: (values: TValues) => void;
 };
 
-export function useRequestForm<TValues = void, TData = any>({
+export function useRequestForm<TValues = void, TData = unknown>({
 	schema,
 	path,
 	options,
@@ -56,19 +56,15 @@ export function useRequestForm<TValues = void, TData = any>({
 		}
 
 		const formData = new FormData(e.currentTarget);
-		const faultyValues = Object.fromEntries(formData);
 		const values = Object.fromEntries(
-			Object.entries(faultyValues).map(([key, value]) => {
-				if (value instanceof File) {
-					if (value.size === 0 || value.name === "") {
-						return [key, undefined];
-					} else {
-						return [key, value];
-					}
-				} else {
-					return [key, value];
-				}
-			}),
+			Array.from(formData.entries()).map(([key, value]) => [
+				key,
+				value instanceof File
+					? value.size === 0 || value.name === ""
+						? undefined
+						: value
+					: value,
+			]),
 		);
 		const { data, error } = schema.safeParse(values);
 
