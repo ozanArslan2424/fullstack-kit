@@ -1,190 +1,150 @@
-import Watcher from "watcher";
+import { EventEmitter } from "events";
+import { watch } from "fs";
+import { readdir, stat } from "fs/promises";
+import { join, parse, relative } from "path";
 import config from "@/app.config";
-import { log } from "@/lib/log";
 
-const serverRouteRegex = /^(.*)\.(get|post|put|delete|patch|options)\.ts$/;
-const serverBasePath = config.server.routes.basePath ?? "";
-
-let clientMap = new Set<string>([]);
-let serverMap = new Set<string>([]);
-
-const w = new Watcher([config.server.routes.path, config.client.routes.path], {
-	recursive: true,
-	renameDetection: true,
-	ignoreInitial: false,
-});
-
-w.on("ready", () => log.start("👀 Watching routes..."));
-w.on("error", log.error);
-w.on("close", () => log.end("👋 Stopped watching routes..."));
-
-function replaceClientRoutePrefix(dir: string) {
-	return String(dir.replace(config.client.routes.path, ""));
+interface RouteInfo {
+	path: string;
+	method?: string;
+	isPage?: boolean;
 }
 
-function replaceServerRoutePrefix(dir: string) {
-	return String(dir.replace(config.server.routes.path, ""));
+interface WatchConfig {
+	serverDir: string;
+	clientDir: string;
+	outFile: string;
 }
 
-function pathToPascalCase(str: string): string {
-	return str.replaceAll("/", "-").replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+function extractServerRouteInfo(filePath: string, baseDir: string): RouteInfo | null {
+	const prefix = config.routes.serverBasePath.replace("/", "") || "";
+	const relativePath = relative(baseDir, filePath);
+	const { dir, name } = parse(relativePath);
+	const [routeName, method] = name.split(".");
+	if (!method) return null;
+	const routePath = join(prefix, dir, routeName)
+		.replace(/\\/g, "/")
+		.replace(/\[([^\]]+)\]/g, ":$1");
+
+	return {
+		path: "/" + routePath,
+		method: method.toUpperCase(),
+	};
 }
 
-function makeClientRoute(fp: string) {
-	const filePath = replaceClientRoutePrefix(fp);
-	const prefixed = config.generated.ignoredPrefixes.some(
-		(prefix) => filePath.charAt(1) === prefix,
-	);
-	const isRouteFile = config.client.routes.routeFileNames.some((name) => {
-		if (name.startsWith("*")) {
-			return filePath.endsWith(name.slice(1));
+function extractClientRouteInfo(filePath: string, baseDir: string): RouteInfo | null {
+	const relativePath = relative(baseDir, filePath);
+	const { dir, name, ext } = parse(relativePath);
+	if (ext !== ".tsx") return null;
+	if (name !== "index" && name !== "page") return null;
+	if (config.routes.ignoredPrefixes.some((prefix) => dir.startsWith(prefix))) return null;
+	const routePath = dir
+		.replace(/\\/g, "/")
+		.replace(/\[([^\]]+)\]/g, ":$1")
+		.replace(config.routes.indexRouteDirName, "");
+	return {
+		path: "/" + routePath,
+		method: "PAGE",
+	};
+}
+
+async function scanDirectory(dir: string): Promise<string[]> {
+	const files: string[] = [];
+
+	async function scan(currentDir: string) {
+		const entries = await readdir(currentDir);
+
+		for (const entry of entries) {
+			const fullPath = join(currentDir, entry);
+			const stats = await stat(fullPath);
+
+			if (stats.isDirectory()) {
+				await scan(fullPath);
+			} else {
+				files.push(fullPath);
+			}
 		}
-		return filePath.endsWith(name);
-	});
-	const isInvalid = prefixed || !isRouteFile || filePath.endsWith(".DS_Store");
-	if (isInvalid) return;
+	}
 
-	const isIndexRoute = config.client.routes.indexRouteDirNames.some((name) =>
-		filePath.startsWith("/" + name),
-	);
-	const name = pathToPascalCase(filePath.replace("/index.tsx", ""));
-	const path = isIndexRoute ? "/" : filePath.replace("/index.tsx", "");
-
-	return { name, path };
+	await scan(dir);
+	return files;
 }
 
-function makeServerRoute(fp: string) {
-	const filePath = serverBasePath + replaceServerRoutePrefix(fp);
-	const fileName = String(filePath.split("/").pop());
-	const prefixed = config.generated.ignoredPrefixes.some((prefix) => fileName.startsWith(prefix));
-	const notRouteFile = !serverRouteRegex.test(fileName);
-	const isInvalid = prefixed || notRouteFile || filePath.endsWith(".DS_Store");
+const makeGeneratedFile = (server: RouteInfo[], client: RouteInfo[]) => {
+	const routes = [...server, ...client];
+	const serverRoutes = server.map((route) => route.path);
+	const clientRoutes = client.map((route) => route.path);
 
-	if (isInvalid) return;
-
-	const name = pathToPascalCase(filePath.replace(".ts", "").replace(".", "/"));
-	const path = filePath.split(".")[0];
-	const method = fileName.split(".")[1].toUpperCase();
-
-	return { name, path, method };
-}
-
-async function writeGeneratedFile() {
 	const clientGlobalTypes = `
-type ClientRoutePath = ${[...clientMap].map((path) => `"${path}"`).join(" | ")};
-type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>;
-type ClientRouteSearchParam<P extends ClientRoutePath> = ExtractSearchParams<P>;`;
+	type ClientRoutePath = ${[...clientRoutes].map((path) => `"${path}"`).join(" | ")};
+	type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>;
+	type ClientRouteSearchParam<P extends ClientRoutePath> = ExtractSearchParams<P>;`;
 
 	const serverGlobalTypes = `
-type ServerRoutePath = ${[...serverMap].map((path) => `"${path}"`).join(" | ")};
-type ServerRoutePathParam<P extends ServerRoutePath> = ExtractRouteParams<P>;
-type ServerRouteSearchParam<P extends ServerRoutePath> = ExtractSearchParams<P>;`;
+	type ServerRoutePath = ${[...serverRoutes].map((path) => `"${path}"`).join(" | ")};
+	type ServerRoutePathParam<P extends ServerRoutePath> = ExtractRouteParams<P>;
+	type ServerRouteSearchParam<P extends ServerRoutePath> = ExtractSearchParams<P>;`;
 
 	const content = `
-// Auto-generated by watch-routes.ts
-type ExtractRouteParams<T> = T extends \`\${infer _Start}:\${infer Param}/\${infer Rest}\`
-	? { [k in Param | keyof ExtractRouteParams<Rest>]: string }
-	: T extends \`\${infer _Start}:\${infer Param}\`
-		? { [k in Param]: string }
-		: { [k in string]: string };
-type ExtractSearchParams<P> = P extends \`\${infer _Start}?\${infer Search}\`
-	? { [k in Search]: string }
-	: { [k in string]: string };
+	// Auto-generated file. Do not edit.
+	type ExtractRouteParams<T> = T extends \`\${infer _Start}:\${infer Param}/\${infer Rest}\`
+		? { [k in Param | keyof ExtractRouteParams<Rest>]: string }
+		: T extends \`\${infer _Start}:\${infer Param}\`
+			? { [k in Param]: string }
+			: { [k in string]: string };
+	type ExtractSearchParams<P> = P extends \`\${infer _Start}?\${infer Search}\`
+		? { [k in Search]: string }
+		: { [k in string]: string };\n
+	declare global {
+		${clientRoutes.length === 0 ? "" : clientGlobalTypes}
+		${serverRoutes.length === 0 ? "" : serverGlobalTypes}
+	}\n
+	export const clientRoutePaths:ClientRoutePath[] = ${JSON.stringify([...clientRoutes], null, 2)};
+	export const serverRoutePaths:ServerRoutePath[] = ${JSON.stringify([...serverRoutes], null, 2)};
+	export const routesConfig = ${JSON.stringify(routes, null, 2)};\n
+`;
 
-declare global {${clientMap.size === 0 ? "" : clientGlobalTypes}\n${serverMap.size === 0 ? "" : serverGlobalTypes}\n}
+	return content;
+};
 
-export const clientRoutePaths:ClientRoutePath[] = ${JSON.stringify([...clientMap])};
-export const serverRoutePaths:ServerRoutePath[] = ${JSON.stringify([...serverMap])};`;
+export async function watchRoutes(config: WatchConfig) {
+	const emitter = new EventEmitter();
+	const watchers: ReturnType<typeof watch>[] = [];
 
-	await Bun.write(config.generated.path, content);
+	async function processRoutes() {
+		const [serverFiles, clientFiles] = await Promise.all([
+			scanDirectory(config.serverDir),
+			scanDirectory(config.clientDir),
+		]);
+
+		const serverRoutes = serverFiles
+			.map((file) => extractServerRouteInfo(file, config.serverDir))
+			.filter((route): route is RouteInfo => route !== null);
+
+		const clientRoutes = clientFiles
+			.map((file) => extractClientRouteInfo(file, config.clientDir))
+			.filter((route): route is RouteInfo => route !== null);
+
+		const content = makeGeneratedFile(serverRoutes, clientRoutes);
+		await Bun.write(config.outFile, content);
+	}
+
+	function watchDir(dir: string) {
+		const watcher = watch(dir, { recursive: true }, async (eventType, filename) => {
+			if (filename) {
+				await processRoutes();
+			}
+		});
+		watchers.push(watcher);
+	}
+
+	watchDir(config.serverDir);
+	watchDir(config.clientDir);
+
+	await processRoutes();
+
+	return () => {
+		watchers.forEach((watcher) => watcher.close());
+		emitter.removeAllListeners();
+	};
 }
-
-w.on("add", (fp) => {
-	if (fp.includes(config.client.routes.path)) {
-		const route = makeClientRoute(fp);
-		if (!route) return;
-		clientMap.add(route.path);
-	} else {
-		const route = makeServerRoute(fp);
-		if (!route) return;
-		serverMap.add(route.path);
-	}
-
-	writeGeneratedFile();
-});
-
-w.on("unlink", (fp) => {
-	if (fp.includes(config.client.routes.path)) {
-		const route = makeClientRoute(fp);
-		if (!route) return;
-		clientMap.delete(route.path);
-	} else {
-		const route = makeServerRoute(fp);
-		if (!route) return;
-		serverMap.delete(route.path);
-	}
-
-	writeGeneratedFile();
-});
-
-w.on("rename", (fp, newFp) => {
-	if (fp.includes(config.client.routes.path)) {
-		const route = makeClientRoute(fp);
-		const newRoute = makeClientRoute(newFp);
-		if (route) {
-			clientMap.delete(route.path);
-		}
-		if (!newRoute) return;
-		clientMap.add(newRoute.path);
-	} else {
-		const route = makeServerRoute(fp);
-		const newRoute = makeServerRoute(newFp);
-		if (route) {
-			serverMap.delete(route.path);
-		}
-		if (!newRoute) return;
-		serverMap.add(newRoute.path);
-	}
-
-	writeGeneratedFile();
-});
-
-w.on("unlinkDir", (dir) => {
-	if (dir.includes(config.client.routes.path)) {
-		const dirPath = replaceClientRoutePrefix(dir);
-		clientMap = new Set([...clientMap].filter((route) => !route.startsWith(dirPath)));
-	} else {
-		const dirPath = serverBasePath + replaceServerRoutePrefix(dir);
-		serverMap = new Set([...serverMap].filter((route) => !route.startsWith(dirPath)));
-	}
-
-	writeGeneratedFile();
-});
-
-w.on("renameDir", (dir, newDir) => {
-	if (dir.includes(config.client.routes.path)) {
-		const dirPath = replaceClientRoutePrefix(dir);
-		const newDirPath = replaceClientRoutePrefix(newDir);
-
-		[...clientMap].map((path) => {
-			if (path.startsWith(dirPath)) {
-				const newPath = path.replace(dirPath, newDirPath);
-				clientMap.delete(path);
-				clientMap.add(newPath);
-			}
-		});
-	} else {
-		const dirPath = serverBasePath + replaceServerRoutePrefix(dir);
-		const newDirPath = serverBasePath + replaceServerRoutePrefix(newDir);
-
-		[...serverMap].map((path) => {
-			if (path.startsWith(dirPath)) {
-				const newPath = path.replace(dirPath, newDirPath);
-				serverMap.delete(path);
-				serverMap.add(newPath);
-			}
-		});
-	}
-
-	writeGeneratedFile();
-});

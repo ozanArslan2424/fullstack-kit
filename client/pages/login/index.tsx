@@ -1,5 +1,5 @@
-import { Link } from "@/client/components/link";
-import { useGuard } from "@/client/hooks/use-guard";
+import { Link } from "@//components/link";
+import { useGuard } from "@//hooks/use-guard";
 import { LoginForm } from "./form";
 
 export function LoginPage() {

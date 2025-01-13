@@ -1,10 +1,10 @@
 import { env } from "bun";
 import { eq } from "drizzle-orm";
-import { ONE_DAY } from "@/lib/constants";
-import { SessionSelect } from "@/lib/types";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
+import { ONE_DAY } from "@/server/lib/constants";
+import { SessionGetType } from "@/server/lib/types";
 
 export function generateSessionToken() {
 	return Bun.randomUUIDv7("base64url");
@@ -14,7 +14,7 @@ export async function createSession(token: string, userId: string) {
 	const hasher = new Bun.CryptoHasher("sha256");
 	const sessionId = hasher.update(token).digest("hex");
 
-	const session: SessionSelect = {
+	const session: SessionGetType = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + ONE_DAY * 30),

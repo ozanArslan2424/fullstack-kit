@@ -1,5 +1,5 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { cn } from "@/client/utils/cn";
+import { cn } from "@/lib/cn";
 
 export function Popover({
 	trigger,

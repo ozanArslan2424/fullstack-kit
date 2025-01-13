@@ -1,6 +1,9 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
-import { App } from "./app";
+import { RouterProvider } from "react-router";
+import { Toaster } from "sonner";
+import { metadata } from "@/generated/metadata";
+import { router } from "@/pages/router";
 import "./styles.css";
 
 const rootElement = document.getElementById("root")!;
@@ -15,4 +18,14 @@ if (rootElement.innerHTML) {
 
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(rootElement).render(<App queryClient={queryClient} />);
+ReactDOM.createRoot(rootElement).render(
+	<>
+		<title>{metadata.title}</title>
+		<meta name="description" content={metadata.description} />
+
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+			<Toaster richColors theme="dark" />
+		</QueryClientProvider>
+	</>,
+);

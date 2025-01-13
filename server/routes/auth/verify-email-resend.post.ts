@@ -1,11 +1,11 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { ONE_DAY } from "@/lib/constants";
-import { log } from "@/lib/log";
-import { verifyEmailResendPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { verifyEmailResendPostSchema } from "@/db/zod";
+import { ONE_DAY } from "@/server/lib/constants";
+import { log } from "@/server/lib/log";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 import { sendVerificationEmail } from "@/server/routes/auth/auth-utils";
 
 const route = createRoute({
@@ -13,15 +13,12 @@ const route = createRoute({
 	path: "/verify-email-resend",
 	method: "post",
 	request: {
-		body: json.requestBody(
-			"authVerifyEmailResendPost Request Body",
-			verifyEmailResendPostSchema,
-		),
+		body: reqBody("authVerifyEmailResendPost Request Body", verifyEmailResendPostSchema),
 	},
 	responses: {
-		200: json.response("Verification email resent", messageSchema),
-		404: json.notFound(),
-		500: json.internalServerError(),
+		200: resContent.json("Verification email resent", messageSchema),
+		404: resContent.notFound(),
+		500: resContent.internalServerError(),
 	},
 });
 

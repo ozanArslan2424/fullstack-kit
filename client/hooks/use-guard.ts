@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
-import { useRouter } from "@/client/hooks/use-router";
-import { sendRequest } from "@/client/utils/send-request";
-import { profileGetSchema } from "@/lib/zod";
+import { profileGetSchema } from "@/generated/zod";
+import { useRouter } from "@/hooks/use-router";
+import { sendRequest } from "@/lib/send-request";
 
 type Role = "logged-in" | "logged-out" | "admin" | "no-guard";
 
@@ -19,6 +19,7 @@ export function useGuard(
 		queryFn: async () => {
 			const { data, res } = await sendRequest("/api/auth/profile", {
 				method: "GET",
+				headers: { "Content-Type": "application/json" },
 			});
 
 			if (!res.ok) {

@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { useForm } from "@/client/hooks/use-form";
-import { useRequest } from "@/client/hooks/use-request";
-import { useRouter } from "@/client/hooks/use-router";
-import { sendRequest } from "@/client/utils/send-request";
-import { changePasswordPostSchema } from "@/lib/zod";
+import { useRouter } from "@//hooks/use-router";
+import { changePasswordPostSchema } from "@/generated/zod";
+import { useRequestForm } from "@/hooks/use-req-form";
+import { sendRequest } from "@/lib/send-request";
 
 export function ChangePasswordForm() {
 	const router = useRouter();
@@ -21,20 +20,19 @@ export function ChangePasswordForm() {
 		}
 	}, [token, email, router]);
 
-	const { mutate, isPending } = useRequest({
+	const { errors, safeSubmit, isPending } = useRequestForm({
+		schema: changePasswordPostSchema,
 		path: "/api/auth/change-password",
 		options: { method: "POST" },
 		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			toast.success("Password changed.");
-			await sendRequest("/api/auth/logout", { method: "POST" });
+			await sendRequest("/api/auth/logout", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			});
 			router.push("/login");
 		},
-	});
-
-	const { errors, safeSubmit } = useForm({
-		schema: changePasswordPostSchema,
-		next: mutate,
 	});
 
 	if (!token || !email) return;

@@ -2,7 +2,7 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
-import { cn } from "@/client/utils/cn";
+import { cn } from "@/lib/cn";
 
 type AlertDialogProps = {
 	trigger: ComponentProps<typeof AlertDialogPrimitive.Trigger>;

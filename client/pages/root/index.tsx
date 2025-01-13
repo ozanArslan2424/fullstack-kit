@@ -1,5 +1,5 @@
-import { Link } from "@/client/components/link";
-import { clientRoutePaths } from "@/generated";
+import { Link } from "@//components/link";
+import { clientRoutePaths } from "@/generated/routes";
 
 export function LandingPage() {
 	return (
@@ -11,16 +11,6 @@ export function LandingPage() {
 						{path}
 					</Link>
 				))}
-				<Link
-					to="/change-password"
-					className="button w-max"
-					search={{
-						email: "email@email.email",
-						token: "test-token",
-					}}
-				>
-					/change-password (for testing)
-				</Link>
 			</div>
 		</div>
 	);

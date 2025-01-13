@@ -1,7 +1,7 @@
 import { XCircleIcon } from "lucide-react";
-import { Tooltip } from "@/client/components/tooltip";
-import { type ProfileData, useGuard } from "@/client/hooks/use-guard";
-import { timestamp } from "@/client/utils/timestamp";
+import { Tooltip } from "@//components/tooltip";
+import { type ProfileData, useGuard } from "@//hooks/use-guard";
+import { timestamp } from "@/lib/timestamp";
 
 export function ProfilePage() {
 	const profile = useGuard("logged-in", "/login");

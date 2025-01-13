@@ -1,126 +1,54 @@
-const root = process.cwd();
-
-const defaults = {
-	generated: {
-		path: root + "/generated.ts",
-		ignoredPrefixes: ["_", "."],
-	},
-	client: {
-		path: root + "/client",
-		routes: {
-			path: root + "/client/routes",
-			routeFileNames: ["index.tsx", "page.tsx", "*.page.tsx"],
-			loaderFileNames: ["loader.tsx", "*.loader.tsx"],
-			indexRouteDirNames: ["index", "root", "landing"],
-		},
-	},
-	server: {
-		path: root + "/server",
-		routes: {
-			path: root + "/server/routes",
-			basePath: "/api",
-		},
-		db: {
-			path: root + "/server/db",
-			schema: root + "/server/db/schema.ts",
-			out: root + "/server/db/drizzle-out",
-			sqlite: root + "/sqlite.db",
-		},
-	},
-	lib: { path: root + "/lib" },
-};
-
-type AppConfig = typeof defaults;
-type AppConfigOptions = {
-	generated?: {
-		path?: string;
-		ignoredPrefixes?: string[];
-	};
-	client?: {
-		path?: string;
-		routes?: {
-			path?: string;
-			routeFileNames?: string[];
-			loaderFileNames?: string[];
-			indexRouteDirNames?: string[];
-		};
-	};
-	server?: {
-		path?: string;
-		routes?: {
-			path?: string;
-			basePath?: string;
-		};
-		db?: {
-			path?: string;
-			schema?: string;
-			out?: string;
-			sqlite?: string;
-		};
-	};
-	lib?: {
-		path?: string;
-	};
-};
-
 function makePath(path: string) {
+	const root = process.cwd();
 	const rootPath = root.endsWith("/") ? root.slice(0, -1) : root;
 	const pathPath = path.startsWith("/") ? path.slice(1) : path;
 	return rootPath + "/" + pathPath;
 }
 
-export function defineAppConfig(config?: AppConfigOptions): AppConfig {
-	const generatedPath = makePath(config?.generated?.path || defaults.generated.path);
-	const clientPath = makePath(config?.client?.path || defaults.client.path);
-	const clientRoutesPath = makePath(config?.client?.routes?.path || defaults.client.routes.path);
+export type AppConfig = {
+	routes: {
+		clientSourceFolder: string;
+		clientRouteFileName: string;
+		serverSourceFolder: string;
+		serverBasePath: string;
+		ignoredPrefixes: string[];
+		indexRouteDirName: string;
+		outFile: string;
+	};
+	db: {
+		drizzleOutFolder: string;
+		tableSourceFile: string;
+		zodSourceFile: string;
+		outFile: string;
+	};
+	metadata: {
+		title: string;
+		description: string;
+		outFile: string;
+	};
+};
 
-	const ignoredPrefixes =
-		config?.generated?.ignoredPrefixes || defaults.generated.ignoredPrefixes;
-	const routeFileNames =
-		config?.client?.routes?.routeFileNames || defaults.client.routes.routeFileNames;
-	const loaderFileNames =
-		config?.client?.routes?.loaderFileNames || defaults.client.routes.loaderFileNames;
-	const indexRouteDirNames =
-		config?.client?.routes?.indexRouteDirNames || defaults.client.routes.indexRouteDirNames;
-
-	const serverPath = makePath(config?.server?.path || defaults.server.path);
-	const serverRoutesPath = makePath(config?.server?.routes?.path || defaults.server.routes.path);
-	const basePath = config?.server?.routes?.basePath || defaults.server.routes.basePath;
-
-	const dbPath = makePath(config?.server?.db?.path || defaults.server.db.path);
-	const schema = makePath(config?.server?.db?.schema || defaults.server.db.schema);
-	const out = makePath(config?.server?.db?.out || defaults.server.db.out);
-	const sqlite = makePath(config?.server?.db?.sqlite || defaults.server.db.sqlite);
-
-	const libPath = makePath(config?.lib?.path || defaults.lib.path);
-
+export function defineAppConfig(config: Partial<AppConfig> = {}): AppConfig {
 	return {
-		generated: { path: generatedPath, ignoredPrefixes },
-		client: {
-			path: clientPath,
-			routes: {
-				path: clientRoutesPath,
-				routeFileNames,
-				loaderFileNames,
-				indexRouteDirNames,
-			},
+		metadata: {
+			title: config.metadata?.title ?? "Kit",
+			description: config.metadata?.description ?? "A starter kit for building web apps.",
+			outFile: makePath(config.metadata?.outFile ?? "client/generated/metadata.ts"),
 		},
-		server: {
-			path: serverPath,
-			routes: {
-				path: serverRoutesPath,
-				basePath: basePath,
-			},
-			db: {
-				path: dbPath,
-				schema,
-				out,
-				sqlite,
-			},
+		routes: {
+			clientSourceFolder: makePath(config.routes?.clientSourceFolder ?? "client/pages"),
+			clientRouteFileName: config.routes?.clientRouteFileName ?? "index.tsx",
+			serverSourceFolder: makePath(config.routes?.serverSourceFolder ?? "server/routes"),
+			serverBasePath: config.routes?.serverBasePath ?? "/api",
+			ignoredPrefixes: config.routes?.ignoredPrefixes ?? ["_"],
+			indexRouteDirName: config.routes?.indexRouteDirName ?? "root",
+			outFile: makePath(config.routes?.outFile ?? "client/generated/routes.ts"),
 		},
-
-		lib: {
-			path: libPath,
+		db: {
+			drizzleOutFolder: makePath(config.db?.drizzleOutFolder ?? "/db/drizzle-out"),
+			tableSourceFile: makePath(config.db?.tableSourceFile ?? "/db/table.ts"),
+			zodSourceFile: makePath(config.db?.zodSourceFile ?? "/db/zod.ts"),
+			outFile: makePath(config.db?.outFile ?? "client/generated/zod.ts"),
 		},
 	};
 }

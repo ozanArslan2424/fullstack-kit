@@ -1,12 +1,12 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { setCookie } from "hono/cookie";
-import { ONE_DAY, SESSION_COOKIE_NAME } from "@/lib/constants";
-import { log } from "@/lib/log";
-import { registerPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { registerPostSchema } from "@/db/zod";
+import { ONE_DAY, SESSION_COOKIE_NAME } from "@/server/lib/constants";
+import { log } from "@/server/lib/log";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 import {
 	createSession,
 	generateSessionToken,
@@ -19,12 +19,12 @@ const route = createRoute({
 	path: "/register",
 	method: "post",
 	request: {
-		body: json.requestBody("authRegisterPost Request Body", registerPostSchema),
+		body: reqBody("authRegisterPost Request Body", registerPostSchema),
 	},
 	responses: {
-		200: json.response("Registered", messageSchema),
-		400: json.badRequest(),
-		500: json.internalServerError(),
+		200: resContent.json("Registered", messageSchema),
+		400: resContent.badRequest(),
+		500: resContent.internalServerError(),
 	},
 });
 
@@ -92,7 +92,7 @@ const handler: HonoHandler<typeof route> = async (c) => {
 	c.set("session", session);
 
 	setCookie(c, SESSION_COOKIE_NAME, sessionToken, {
-		expires: session.expiresAt,
+		expires: new Date(session.expiresAt),
 		path: "/",
 	});
 

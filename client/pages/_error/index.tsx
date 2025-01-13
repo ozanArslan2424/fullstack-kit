@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useRouteError } from "react-router";
-import { GenericError } from "@/client/components/generic-error";
-import { Link } from "@/client/components/link";
+import { GenericError } from "@//components/generic-error";
+import { Link } from "@//components/link";
 
 export function ErrorPage() {
 	const error = useRouteError();

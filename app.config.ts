@@ -1,31 +1,27 @@
 import { defineAppConfig } from "./scripts/define-config";
 
 export default defineAppConfig({
-	generated: {
-		path: "/generated.ts",
-		ignoredPrefixes: ["_", "."],
+	routes: {
+		clientSourceFolder: "/client/pages",
+		clientRouteFileName: "index.tsx",
+
+		serverSourceFolder: "/server/routes",
+		serverBasePath: "/api",
+
+		ignoredPrefixes: ["_"],
+		indexRouteDirName: "root",
+
+		outFile: "/client/generated/routes.ts",
 	},
-	client: {
-		path: "/client",
-		routes: {
-			path: "/client/pages",
-			routeFileNames: ["index.tsx", "page.tsx", "*.page.tsx"],
-			loaderFileNames: ["loader.tsx", "*.loader.tsx"],
-			indexRouteDirNames: ["index", "root", "landing"],
-		},
+	db: {
+		drizzleOutFolder: "/db/drizzle-out",
+		tableSourceFile: "/db/table.ts",
+		zodSourceFile: "/db/zod.ts",
+		outFile: "/client/generated/zod.ts",
 	},
-	server: {
-		path: "/server",
-		routes: {
-			path: "/server/routes",
-			basePath: "/api",
-		},
-		db: {
-			path: "/server/db",
-			schema: "/server/db/schema.ts",
-			out: "/server/db/drizzle-out",
-			sqlite: "/sqlite.db",
-		},
+	metadata: {
+		title: "Kit",
+		description: "A starter kit for building web apps.",
+		outFile: "/client/generated/metadata.ts",
 	},
-	lib: { path: "/lib" },
 });

@@ -1,9 +1,9 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { changePasswordPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { changePasswordPostSchema } from "@/db/zod";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 import { hashPassword } from "@/server/routes/auth/auth-utils";
 
 const route = createRoute({
@@ -11,12 +11,12 @@ const route = createRoute({
 	path: "/change-password",
 	method: "post",
 	request: {
-		body: json.requestBody("Change Password Request Body", changePasswordPostSchema),
+		body: reqBody("Change Password Request Body", changePasswordPostSchema),
 	},
 	responses: {
-		200: json.response("Password updated", messageSchema),
-		400: json.badRequest(),
-		404: json.notFound(),
+		200: resContent.json("Password updated", messageSchema),
+		400: resContent.badRequest(),
+		404: resContent.notFound(),
 	},
 });
 

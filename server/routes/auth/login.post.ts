@@ -1,12 +1,12 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { setCookie } from "hono/cookie";
-import { SESSION_COOKIE_NAME } from "@/lib/constants";
-import { log } from "@/lib/log";
-import { loginPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { loginPostSchema } from "@/db/zod";
+import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
+import { log } from "@/server/lib/log";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 import {
 	createSession,
 	generateSessionToken,
@@ -18,11 +18,11 @@ const route = createRoute({
 	path: "/login",
 	method: "post",
 	request: {
-		body: json.requestBody("authLoginPost Request Body", loginPostSchema),
+		body: reqBody("authLoginPost Request Body", loginPostSchema),
 	},
 	responses: {
-		200: json.response("Logged in", messageSchema),
-		400: json.badRequest(),
+		200: resContent.json("Logged in", messageSchema),
+		400: resContent.badRequest(),
 	},
 });
 

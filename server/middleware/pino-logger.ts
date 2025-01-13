@@ -1,7 +1,7 @@
 import { pinoLogger } from "hono-pino";
 import pino from "pino";
 import pretty from "pino-pretty";
-import { env } from "@/lib/env";
+import { env } from "@/server/lib/env";
 
 export function logger() {
 	const prettied = env.NODE_ENV === "production" ? undefined : pretty();

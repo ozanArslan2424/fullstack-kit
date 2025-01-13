@@ -1,7 +1,7 @@
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
-import { SESSION_COOKIE_NAME } from "@/lib/constants";
-import { log } from "@/lib/log";
+import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
+import { log } from "@/server/lib/log";
 import { HonoBindings } from "@/server/lib/types";
 import { validateSessionToken } from "@/server/routes/auth/auth-utils";
 

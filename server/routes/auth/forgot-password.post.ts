@@ -1,25 +1,25 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { ONE_DAY } from "@/lib/constants";
-import { env } from "@/lib/env";
-import { forgotPasswordPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { forgotPasswordPostSchema } from "@/db/zod";
 import { htmlToString } from "@/server/email/html-to-string";
 import { sendEmail } from "@/server/email/send-email";
+import { ONE_DAY } from "@/server/lib/constants";
+import { env } from "@/server/lib/env";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 
 const route = createRoute({
 	tags: ["auth"],
 	path: "/forgot-password",
 	method: "post",
 	request: {
-		body: json.requestBody("Forgot Password Request Body", forgotPasswordPostSchema),
+		body: reqBody("Forgot Password Request Body", forgotPasswordPostSchema),
 	},
 	responses: {
-		200: json.response("Email sent", messageSchema),
-		404: json.notFound(),
-		500: json.internalServerError(),
+		200: resContent.json("Email sent", messageSchema),
+		404: resContent.notFound(),
+		500: resContent.internalServerError(),
 	},
 });
 

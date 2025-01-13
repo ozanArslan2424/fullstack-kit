@@ -1,23 +1,24 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { deleteCookie } from "hono/cookie";
-import { SESSION_COOKIE_NAME } from "@/lib/constants";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { SESSION_COOKIE_NAME } from "@/server/lib/constants";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, resContent } from "@/server/lib/utils";
 
 const route = createRoute({
 	tags: ["auth"],
 	path: "/logout",
 	method: "post",
 	responses: {
-		200: json.response("Logged out", messageSchema),
-		400: json.badRequest(),
+		200: resContent.json("Logged out", messageSchema),
+		400: resContent.badRequest(),
 	},
 });
 
 const handler: HonoHandler<typeof route> = async (c) => {
 	const session = c.get("session");
+
 	if (!session) {
 		return c.json({ message: "User not logged in" }, 400);
 	}

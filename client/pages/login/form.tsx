@@ -1,28 +1,24 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useForm } from "@/client/hooks/use-form";
-import { useRequest } from "@/client/hooks/use-request";
-import { useRouter } from "@/client/hooks/use-router";
-import { loginPostSchema } from "@/lib/zod";
+import { useRouter } from "@//hooks/use-router";
+import { loginPostSchema } from "@/generated/zod";
+import { useRequestForm } from "@/hooks/use-req-form";
 
 export function LoginForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { mutate, isPending } = useRequest({
+	const { safeSubmit, errors, isPending } = useRequestForm({
+		schema: loginPostSchema,
 		path: "/api/auth/login",
 		options: { method: "POST" },
+		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["profile"] });
 			router.push("/");
 		},
-		onError: ({ message }) => toast.error(message),
 	});
 
-	const { errors, safeSubmit } = useForm({
-		schema: loginPostSchema,
-		next: mutate,
-	});
 	return (
 		<form onSubmit={safeSubmit}>
 			{errors.root && (

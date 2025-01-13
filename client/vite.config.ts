@@ -7,9 +7,8 @@ export default defineConfig({
 	build: {
 		cssMinify: "lightningcss",
 		manifest: true,
-		rollupOptions: {
-			treeshake: "recommended",
-		},
+		outDir: "../dist",
+		emptyOutDir: true,
 	},
 	server: {
 		proxy: {

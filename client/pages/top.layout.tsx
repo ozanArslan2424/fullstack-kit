@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Outlet } from "react-router";
-import { Link } from "@/client/components/link";
-import { useGuard } from "@/client/hooks/use-guard";
-import { useRouter } from "@/client/hooks/use-router";
-import { sendRequest } from "@/client/utils/send-request";
+import { Link } from "@//components/link";
+import { useGuard } from "@//hooks/use-guard";
+import { useRouter } from "@//hooks/use-router";
+import { useRequest } from "@/hooks/use-request";
 
 export function TopLayout() {
 	const profile = useGuard();
@@ -11,18 +11,12 @@ export function TopLayout() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { mutate } = useMutation({
-		mutationKey: ["logout"],
-		mutationFn: () =>
-			sendRequest("/api/auth/logout", {
-				method: "POST",
-			}),
-		onSuccess: () => {
-			queryClient
-				.invalidateQueries({
-					queryKey: ["profile"],
-				})
-				.then(() => router.push("/login"));
+	const { mutate } = useRequest({
+		path: "/api/auth/logout",
+		options: { method: "POST" },
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["profile"] });
+			router.push("/login");
 		},
 	});
 

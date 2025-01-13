@@ -1,15 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useForm } from "@/client/hooks/use-form";
-import { useRequest } from "@/client/hooks/use-request";
-import { useRouter } from "@/client/hooks/use-router";
-import { registerPostSchema } from "@/lib/zod";
+import { registerPostSchema } from "@/generated/zod";
+import { useRequestForm } from "@/hooks/use-req-form";
+import { useRouter } from "@/hooks/use-router";
 
 export function RegisterForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { mutate, isPending } = useRequest({
+	const { safeSubmit, errors, isPending } = useRequestForm({
+		schema: registerPostSchema,
 		path: "/api/auth/register",
 		options: { method: "POST" },
 		onSuccess: async () => {
@@ -17,11 +17,6 @@ export function RegisterForm() {
 			router.push("/");
 		},
 		onError: ({ message }) => toast.error(message),
-	});
-
-	const { errors, safeSubmit } = useForm({
-		schema: registerPostSchema,
-		next: mutate,
 	});
 
 	return (

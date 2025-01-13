@@ -2,12 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useForm } from "@/client/hooks/use-form";
-import { useRequest } from "@/client/hooks/use-request";
-import { useRouter } from "@/client/hooks/use-router";
-import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/lib/zod";
+import { useRequest } from "@//hooks/use-request";
+import { useRouter } from "@//hooks/use-router";
+import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/generated/zod";
+import { useRequestForm } from "@/hooks/use-req-form";
 
-type VerifyEmailPostValues = z.infer<typeof verifyEmailPostSchema>;
 type VerifyEmailResendPostValues = z.infer<typeof verifyEmailResendPostSchema>;
 
 export function VerifyEmailForm({ email, token }: { email: string | null; token: string | null }) {
@@ -16,7 +15,8 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { mutate, isPending } = useRequest<VerifyEmailPostValues>({
+	const { safeSubmit, errors, isPending } = useRequestForm({
+		schema: verifyEmailPostSchema,
 		path: "/api/auth/verify-email",
 		options: { method: "POST" },
 		onError: ({ message }) => toast.error(message),
@@ -25,11 +25,6 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 			toast.success("Email verified.");
 			router.push("/profile");
 		},
-	});
-
-	const { errors, safeSubmit } = useForm({
-		schema: verifyEmailPostSchema,
-		next: mutate,
 	});
 
 	const { mutate: mutateResend, isPending: isPendingResend } =
@@ -79,11 +74,20 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 				<label htmlFor="token">{errors.token}</label>
 			</fieldset>
 
-			<button type="submit" className="primary w-full" disabled={isPending}>
+			<button
+				type="submit"
+				className="primary w-full"
+				disabled={isPending || isPendingResend}
+			>
 				{isPending ? "Loading..." : "Verify Email"}
 			</button>
 
-			<button type="button" className="sm ghost w-full" onClick={handleResend}>
+			<button
+				type="button"
+				className="sm ghost w-full"
+				onClick={handleResend}
+				disabled={isPending || isPendingResend}
+			>
 				{isPendingResend
 					? "Loading..."
 					: "If you haven't received a token or link, enter your email and click here."}

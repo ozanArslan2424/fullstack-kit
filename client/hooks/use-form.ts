@@ -8,13 +8,13 @@ export type UseFormOptions<T, R> = {
 
 type FieldErrors<T> = ZodError<T>["formErrors"]["fieldErrors"] & { root?: string };
 
-export function useForm<T = any, R = void>({ schema, next }: UseFormOptions<T, R>) {
-	const [errors, setErrors] = useState<FieldErrors<T>>({});
+export function useForm<T = void, R = void>({ schema, next }: UseFormOptions<T, R>) {
+	const [fieldErrors, setFieldErrors] = useState<FieldErrors<T>>({});
 
 	function safeSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		e.stopPropagation();
-		setErrors({});
+		setFieldErrors({});
 
 		if (!schema) {
 			next({} as T);
@@ -36,16 +36,15 @@ export function useForm<T = any, R = void>({ schema, next }: UseFormOptions<T, R
 				}
 			}),
 		);
-		const parseResult = schema.safeParse(values);
-		const { success, data, error } = parseResult;
+		const { data, error } = schema.safeParse(values);
 
-		if (!success) {
-			setErrors(error.formErrors.fieldErrors);
+		if (error) {
+			setFieldErrors(error.formErrors.fieldErrors);
 			return;
 		}
 
 		next(data);
 	}
 
-	return { errors, safeSubmit };
+	return { fieldErrors, safeSubmit };
 }

@@ -1,21 +1,21 @@
 import { createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { verifyEmailPostSchema } from "@/lib/zod";
-import { db, table } from "@/server/db";
+import { db, table } from "@/db";
+import { verifyEmailPostSchema } from "@/db/zod";
 import { HonoHandler } from "@/server/lib/types";
-import { json, messageSchema } from "@/server/lib/utils";
+import { messageSchema, reqBody, resContent } from "@/server/lib/utils";
 
 const route = createRoute({
 	tags: ["auth"],
 	path: "/verify-email",
 	method: "post",
 	request: {
-		body: json.requestBody("Verify Email Request Body", verifyEmailPostSchema),
+		body: reqBody("Verify Email Request Body", verifyEmailPostSchema),
 	},
 	responses: {
-		200: json.response("Email verified", messageSchema),
-		404: json.notFound(),
-		400: json.badRequest(),
+		200: resContent.json("Email verified", messageSchema),
+		404: resContent.notFound(),
+		400: resContent.badRequest(),
 	},
 });
 

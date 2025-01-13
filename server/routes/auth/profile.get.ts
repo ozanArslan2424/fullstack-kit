@@ -1,15 +1,15 @@
 import { createRoute } from "@hono/zod-openapi";
-import { profileGetSchema } from "@/lib/zod";
+import { profileGetSchema } from "@/db/zod";
 import { HonoHandler } from "@/server/lib/types";
-import { json } from "@/server/lib/utils";
+import { resContent } from "@/server/lib/utils";
 
 const route = createRoute({
 	tags: ["auth"],
 	path: "/profile",
 	method: "get",
 	responses: {
-		200: json.response("User profile", profileGetSchema),
-		401: json.unauthorized(),
+		200: resContent.json("User profile", profileGetSchema),
+		401: resContent.unauthorized(),
 	},
 });
 

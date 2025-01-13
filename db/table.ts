@@ -1,4 +1,5 @@
-import { boolean, enumLite, sqliteTable, text, timestamp } from "@/server/db/utils";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { boolean, enumLite, timestamp } from "./utils";
 
 export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),
@@ -6,7 +7,7 @@ export const user = sqliteTable("user", {
 	email: text("email").notNull().unique(),
 	image: text("image"),
 	about: text("about"),
-	emailVerified: boolean("emailVerified"),
+	emailVerified: boolean("emailVerified").notNull(),
 	createdAt: timestamp("createdAt").notNull(),
 	updatedAt: timestamp("updatedAt").notNull(),
 });
@@ -26,7 +27,7 @@ export const account = sqliteTable("account", {
 		.notNull()
 		.references(() => user.id),
 	passwordHash: text("passwordHash").notNull(),
-	locked: boolean("locked"),
+	locked: integer("locked", { mode: "boolean" }),
 });
 
 export const verification = sqliteTable("verification", {
@@ -34,7 +35,7 @@ export const verification = sqliteTable("verification", {
 	userEmail: text("userEmail").notNull(),
 	userId: text("userId").notNull(),
 	token: text("token").notNull(),
-	type: enumLite("type", ["email", "password"]).notNull(),
+	type: text("type", { enum: ["email", "password"] }).notNull(),
 	expiresAt: timestamp("expiresAt").notNull(),
 	createdAt: timestamp("createdAt"),
 });

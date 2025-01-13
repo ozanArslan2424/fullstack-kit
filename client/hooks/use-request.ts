@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { RequestOptions, RequestReturn, sendRequest } from "../utils/send-request";
+import { RequestOptions, RequestReturn, sendRequest } from "@/lib/send-request";
 
 type Res<T> = Awaited<RequestReturn<T>>["res"];
 type Data<T> = Awaited<RequestReturn<T>>["data"];
@@ -12,7 +12,7 @@ type UseRequestOptions<TValues, TData> = {
 	optimisticUpdate?: (values: TValues) => void;
 };
 
-export function useRequest<TValues, TData = any>({
+export function useRequest<TValues = void, TData = any>({
 	path,
 	options,
 	onSuccess,
@@ -20,7 +20,12 @@ export function useRequest<TValues, TData = any>({
 	optimisticUpdate,
 }: UseRequestOptions<TValues, TData>) {
 	const { mutate, isPending } = useMutation<Awaited<RequestReturn<TData>>, Error, TValues>({
-		mutationFn: (values) => sendRequest(path, { ...options, body: JSON.stringify(values) }),
+		mutationFn: (values) =>
+			sendRequest(path, {
+				...options,
+				body: JSON.stringify(values),
+				headers: { "Content-Type": "application/json" },
+			}),
 		onSuccess: ({ data, res }) => onSuccess?.(data, res),
 		onError: onError === "throw" ? undefined : onError,
 		throwOnError: onError === "throw",
