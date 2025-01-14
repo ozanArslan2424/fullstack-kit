@@ -9,7 +9,12 @@ async function readFile(path: string): Promise<string> {
 async function initializeContents(config: AppConfig) {
 	const zodContent = await readFile(config.db.zodSourceFile);
 	const metadata = await readFile(join(process.cwd(), "app.config.ts"));
-	const metadataContent = `// Auto-generated file. Do not edit.\n export const metadata = ${JSON.stringify(metadata, null, 2)};`;
+
+	const metadataRegex = /\{\s*title:\s*"[^"]*",\s*description:\s*"[^"]*"[^}]*\}/;
+
+	const metadataMatch = metadata.match(metadataRegex)![0];
+
+	const metadataContent = `// Auto-generated file. Do not edit.\n export const metadata = ${metadataMatch};`;
 
 	await Bun.write(config.metadata.outFile, metadataContent);
 	await Bun.write(config.db.outFile, zodContent);
@@ -24,13 +29,17 @@ function setupWatchers(config: AppConfig) {
 		if (curr.mtime !== prev.mtime) {
 			delete require.cache[configPath];
 
-			const metadata = JSON.parse(
-				await readFile(join(process.cwd(), "app.config.ts")),
-			).metadata;
+			const metadata = await readFile(join(process.cwd(), "app.config.ts"));
 
-			const content = `// Auto-generated file. Do not edit.\n export const metadata = ${JSON.stringify(metadata, null, 2)};`;
+			const metadataRegex = /\{\s*title:\s*"[^"]*",\s*description:\s*"[^"]*"[^}]*\}/;
 
-			await Bun.write(config.metadata.outFile, content);
+			const metadataMatch = metadata.match(metadataRegex)![0];
+
+			console.log(metadataMatch);
+
+			const metadataContent = `// Auto-generated file. Do not edit.\n export const metadata = ${metadataMatch};`;
+
+			await Bun.write(config.metadata.outFile, metadataContent);
 		}
 	};
 

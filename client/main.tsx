@@ -1,9 +1,10 @@
+import { metadata } from "@/generated/metadata";
+import { router } from "@/pages/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { Toaster } from "sonner";
-import { metadata } from "@/generated/metadata";
-import { router } from "@/pages/router";
 import "./styles.css";
 
 const rootElement = document.getElementById("root")!;
@@ -23,9 +24,11 @@ ReactDOM.createRoot(rootElement).render(
 		<title>{metadata.title}</title>
 		<meta name="description" content={metadata.description} />
 
-		<QueryClientProvider client={queryClient}>
-			<RouterProvider router={router} />
-			<Toaster richColors theme="dark" />
-		</QueryClientProvider>
+		<ThemeProvider attribute="class" enableSystem defaultTheme="system">
+			<QueryClientProvider client={queryClient}>
+				<RouterProvider router={router} />
+				<Toaster richColors theme="dark" />
+			</QueryClientProvider>
+		</ThemeProvider>
 	</>,
 );

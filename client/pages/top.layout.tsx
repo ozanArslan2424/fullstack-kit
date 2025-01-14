@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import { Link } from "@//components/link";
 import { useGuard } from "@//hooks/use-guard";
 import { useRouter } from "@//hooks/use-router";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { useRequest } from "@/hooks/use-request";
 
 export function TopLayout() {
@@ -27,6 +28,7 @@ export function TopLayout() {
 					<h2>Tabula</h2>
 				</Link>
 				<nav className="flex items-center gap-2">
+					<ThemeSwitch />
 					<Link to="/" className="button sm">
 						Home
 					</Link>

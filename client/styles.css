@@ -3,25 +3,67 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
+@layer base {
+	:root {
+		--background: oklch(98% 0.005 195);
+		--foreground: var(--color-stone-950);
+		--border: var(--color-stone-200);
+		--ring: var(--color-indigo-600);
+		--primary: var(--color-stone-950);
+		--primary-foreground: var(--color-stone-50);
+		--secondary: var(--color-stone-100);
+		--secondary-foreground: var(--color-stone-900);
+		--info: var(--color-sky-600);
+		--info-foreground: var(--color-stone-50);
+		--success: var(--color-emerald-600);
+		--success-foreground: var(--color-stone-50);
+		--warning: var(--color-yellow-600);
+		--warning-foreground: var(--color-stone-50);
+		--error: var(--color-rose-600);
+		--error-foreground: var(--color-stone-50);
+		--muted: var(--color-stone-200);
+		--muted-foreground: var(--color-stone-600);
+	}
+	.dark {
+		--background: oklch(18% 0.005 195);
+		--foreground: var(--color-stone-50);
+		--border: var(--color-stone-400);
+		--ring: var(--color-indigo-400);
+		--primary: var(--color-stone-50);
+		--primary-foreground: var(--color-stone-950);
+		--secondary: var(--color-stone-700);
+		--secondary-foreground: var(--color-stone-50);
+		--info: var(--color-sky-600);
+		--info-foreground: var(--color-stone-50);
+		--success: var(--color-emerald-600);
+		--success-foreground: var(--color-stone-50);
+		--warning: var(--color-yellow-600);
+		--warning-foreground: var(--color-stone-50);
+		--error: var(--color-rose-600);
+		--error-foreground: var(--color-stone-50);
+		--muted: var(--color-stone-700);
+		--muted-foreground: var(--color-stone-400);
+	}
+}
 @theme {
-	--color-background: oklch(18% 0.005 195);
-	--color-foreground: var(--color-stone-50);
-	--color-border: var(--color-stone-400);
-	--color-ring: var(--color-indigo-400);
-	--color-primary: var(--color-stone-50);
-	--color-primary-foreground: var(--color-stone-950);
-	--color-secondary: var(--color-stone-700);
-	--color-secondary-foreground: var(--color-stone-50);
-	--color-info: var(--color-sky-600);
-	--color-info-foreground: var(--color-stone-50);
-	--color-success: var(--color-emerald-600);
-	--color-success-foreground: var(--color-stone-50);
-	--color-warning: var(--color-yellow-600);
-	--color-warning-foreground: var(--color-stone-50);
-	--color-error: var(--color-rose-600);
-	--color-error-foreground: var(--color-stone-50);
-	--color-muted: var(--color-stone-700);
-	--color-muted-foreground: var(--color-stone-400);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-border: var(--border);
+	--color-ring: var(--ring);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-success: var(--color-success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-error: var(--error);
+	--color-error-foreground: var(--error-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
 
 	--radius-lg: 0.5rem;
 	--radius-md: calc(0.5rem - 2px);
@@ -38,13 +80,13 @@
 	}
 
 	body {
-		@apply bg-background text-foreground antialiased;
+		@apply bg-background text-foreground antialiased transition-colors;
 	}
 
 	svg {
 		@apply shrink-0;
 	}
-
+	/*
 	hr {
 		@apply my-4 border;
 	}
@@ -241,7 +283,7 @@
 		svg {
 			@apply pointer-events-none size-4 shrink-0;
 		}
-	}
+	} */
 }
 
 @utility stack {

@@ -1,4 +1,3 @@
-// Auto-generated file. Do not edit.
 import { z } from "zod";
 
 export const profileGetSchema = z.object({
