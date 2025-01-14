@@ -1,6 +1,5 @@
 import config from "@/app.config";
-import { watchSchemaFiles } from "@/scripts/watch-zod";
-import { watchConfig } from "./watch-metadata";
+import { watchFiles } from "@/scripts/watch-files";
 import { watchRoutes } from "./watch-routes";
 
 const root = process.cwd() + "/";
@@ -9,12 +8,7 @@ const clientSource = config.routes.clientSourceFolder.replace(root, "");
 
 console.log("Watching for changes...");
 
-const configCleanup = await watchConfig(config.metadata);
-
-const schemaCleanup = await watchSchemaFiles({
-	zodFile: config.db.zodSourceFile,
-	outFile: config.db.outFile,
-});
+const filesCleanup = await watchFiles(config);
 
 const routesCleanup = await watchRoutes({
 	serverDir: serverSource,
@@ -22,8 +16,7 @@ const routesCleanup = await watchRoutes({
 	outFile: config.routes.outFile,
 });
 
-process.on("exit", () => {
-	configCleanup();
-	schemaCleanup();
+process.on("SIGINT", () => {
+	filesCleanup();
 	routesCleanup();
 });

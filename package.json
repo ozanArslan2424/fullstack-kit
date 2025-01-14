@@ -9,7 +9,7 @@
 		"server": "bun run --hot ./server/index.ts",
 		"format": "prettier --write .",
 		"db": "bunx drizzle-kit generate && bun run ./db/migrate.ts",
-		"dev": "concurrently \"bun run server\" \"bun run client\" ",
+		"dev": "concurrently \"bun run scripts/watch-all.ts\" \"bun run server\" \"bun run client\" ",
 		"prod": "bun run format && bun run client:build && bun run server"
 	},
 	"dependencies": {
