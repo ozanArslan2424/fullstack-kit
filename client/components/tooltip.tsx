@@ -16,6 +16,7 @@ export function Tooltip({ tip, tipProps, className, ...rest }: TooltipProps) {
 				<TooltipPrimitive.Trigger className={cn("default", className)} {...rest} />
 				<TooltipPrimitive.Content
 					className={cn(
+						tipProps?.className,
 						"bg-background text-foreground animate-in fade-in-0 zoom-in-95 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-sm shadow-md",
 						"data-[state=closed]:animate-out",
 						"data-[state=closed]:fade-out-0",
@@ -24,7 +25,6 @@ export function Tooltip({ tip, tipProps, className, ...rest }: TooltipProps) {
 						"data-[side=left]:slide-in-from-right-2",
 						"data-[side=right]:slide-in-from-left-2",
 						"data-[side=bottom]:slide-in-from-top-2",
-						tipProps?.className,
 					)}
 					{...tipProps}
 				>

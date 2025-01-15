@@ -1,11 +1,25 @@
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
+import { ChevronsLeftIcon, XIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
+import React from "react";
 import { cn } from "@/lib/cn";
+import { buttonStyles } from "./button";
+
+type SheetDialogProps = {
+	trigger: ReactNode;
+	title: string;
+	description: string;
+	className?: string;
+	children?: React.ReactNode;
+	open?: ComponentProps<typeof DialogPrimitive.Root>["open"];
+	onOpenChange?: ComponentProps<typeof DialogPrimitive.Root>["onOpenChange"];
+	defaultOpen?: ComponentProps<typeof DialogPrimitive.Root>["defaultOpen"];
+	side?: "top" | "bottom" | "left" | "right";
+} & ComponentProps<typeof DialogPrimitive.Content>;
 
 type AlertDialogProps = {
-	trigger: ComponentProps<typeof AlertDialogPrimitive.Trigger>;
+	trigger: ReactNode;
 	title: string;
 	description: string;
 	className?: string;
@@ -25,8 +39,17 @@ type DialogProps = {
 
 type CombinedDialogProps =
 	| ({ variant: "alert" } & AlertDialogProps)
-	| ({ variant: "dialog" } & DialogProps);
+	| ({ variant: "dialog" } & DialogProps)
+	| ({ variant: "sheet" } & SheetDialogProps);
 
+const sheetVariants = {
+	top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+	bottom: "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+	left: "inset-y-0 left-0 h-full w-[75%] border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-md",
+	right: "inset-y-0 right-0 h-full w-[75%] border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-md",
+};
+const closeClassName =
+	"icon-sm text-muted-foreground hover:bg-error/30 absolute top-0 right-0 size-7 rounded-tl-none rounded-tr-lg rounded-br-none rounded-bl-lg border-b-2 border-l-2";
 const overlayClassName = cn(
 	"fixed inset-0 z-50 bg-black/80",
 
@@ -36,7 +59,6 @@ const overlayClassName = cn(
 	"data-[state=closed]:animate-out",
 	"data-[state=closed]:fade-out-0",
 );
-
 const contentClassName = (className?: string) =>
 	cn(
 		"bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200",
@@ -50,7 +72,7 @@ const contentClassName = (className?: string) =>
 		className,
 	);
 
-export function NormalDialog({
+function NormalDialog({
 	trigger,
 	title,
 	description,
@@ -68,7 +90,7 @@ export function NormalDialog({
 				<DialogPrimitive.Overlay className={overlayClassName} />
 				<DialogPrimitive.Content className={contentClassName(className)} {...rest}>
 					<div className="flex flex-col gap-1.5 text-left">
-						<DialogPrimitive.Title className="text-lg leading-none font-semibold tracking-tight">
+						<DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
 							{title}
 						</DialogPrimitive.Title>
 						<DialogPrimitive.Description className="text-muted-foreground text-sm">
@@ -76,7 +98,7 @@ export function NormalDialog({
 						</DialogPrimitive.Description>
 					</div>
 					{children}
-					<DialogPrimitive.Close className="icon-sm text-muted-foreground hover:bg-error/30 absolute top-0 right-0 size-7 rounded-tl-none rounded-tr-lg rounded-br-none rounded-bl-lg border-b-2 border-l-2">
+					<DialogPrimitive.Close className={closeClassName}>
 						<XIcon strokeWidth={3} />
 						<span className="sr-only">Close</span>
 					</DialogPrimitive.Close>
@@ -86,7 +108,7 @@ export function NormalDialog({
 	);
 }
 
-export function AlertDialog({
+function AlertDialog({
 	trigger,
 	title,
 	description,
@@ -103,7 +125,7 @@ export function AlertDialog({
 	const { className: actionClassName, ...actionProps } = action;
 	return (
 		<AlertDialogPrimitive.Root>
-			<AlertDialogPrimitive.Trigger {...trigger} />
+			<AlertDialogPrimitive.Trigger asChild>{trigger}</AlertDialogPrimitive.Trigger>
 			<AlertDialogPrimitive.Portal>
 				<AlertDialogPrimitive.Overlay className={overlayClassName} />
 				<AlertDialogPrimitive.Content className={contentClassName(className)}>
@@ -117,13 +139,13 @@ export function AlertDialog({
 					<div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2">
 						<AlertDialogPrimitive.Cancel
 							{...cancelProps}
-							className={cn("button", cancelClassName)}
+							className={buttonStyles({ className: cancelClassName })}
 						>
 							{cancelChildren}
 						</AlertDialogPrimitive.Cancel>
 						<AlertDialogPrimitive.Action
 							{...actionProps}
-							className={cn("button", actionClassName)}
+							className={buttonStyles({ className: actionClassName })}
 						/>
 					</div>
 				</AlertDialogPrimitive.Content>
@@ -132,10 +154,62 @@ export function AlertDialog({
 	);
 }
 
-export function Dialog({ variant = "dialog", ...rest }: CombinedDialogProps) {
-	return variant === "alert" ? (
-		<AlertDialog {...(rest as AlertDialogProps)} />
-	) : (
-		<NormalDialog {...(rest as DialogProps)} />
+function SheetDialog({
+	title,
+	description,
+	children,
+	className,
+	trigger,
+	onOpenChange,
+	open,
+	defaultOpen,
+	side = "left",
+	...props
+}: SheetDialogProps) {
+	return (
+		<DialogPrimitive.Root open={open} onOpenChange={onOpenChange} defaultOpen={defaultOpen}>
+			<DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+			<DialogPrimitive.Portal>
+				<DialogPrimitive.Overlay className={overlayClassName} />
+				<DialogPrimitive.Content
+					className={cn(
+						"bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-8 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+						sheetVariants[side],
+						className,
+					)}
+					{...props}
+				>
+					<div className="flex flex-col gap-4 pb-4">
+						<DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-wide">
+							{title}
+						</DialogPrimitive.Title>
+						<DialogPrimitive.Description className="text-muted-foreground">
+							{description}
+						</DialogPrimitive.Description>
+					</div>
+					{children}
+					<DialogPrimitive.Close
+						className={
+							"default absolute right-2 top-2 aspect-square cursor-pointer rounded-none p-2 text-xs transition-all hover:opacity-70"
+						}
+					>
+						<ChevronsLeftIcon strokeWidth={3} className="h-5 w-5" />
+						<span className="sr-only">Close</span>
+					</DialogPrimitive.Close>
+				</DialogPrimitive.Content>
+			</DialogPrimitive.Portal>
+		</DialogPrimitive.Root>
 	);
+}
+
+export function Dialog({ variant = "dialog", ...rest }: CombinedDialogProps) {
+	if (variant === "sheet") {
+		return <SheetDialog {...(rest as SheetDialogProps)} />;
+	}
+
+	if (variant === "alert") {
+		return <AlertDialog {...(rest as AlertDialogProps)} />;
+	}
+
+	return <NormalDialog {...(rest as DialogProps)} />;
 }
