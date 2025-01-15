@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { useRouter } from "@//hooks/use-router";
+import { Button } from "@/components/button";
+import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
 import { changePasswordPostSchema } from "@/generated/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 import { sendRequest } from "@/lib/send-request";
@@ -20,10 +22,10 @@ export function ChangePasswordForm() {
 		}
 	}, [token, email, router]);
 
-	const { errors, safeSubmit, isPending } = useRequestForm({
+	const { form, handleSubmit, isPending } = useRequestForm({
 		schema: changePasswordPostSchema,
 		path: "/api/auth/change-password",
-		options: { method: "POST" },
+		method: "POST",
 		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			toast.success("Password changed.");
@@ -33,70 +35,45 @@ export function ChangePasswordForm() {
 			});
 			router.push("/login");
 		},
+		defaultValues: {
+			userEmail: email ?? "",
+			token: token ?? "",
+		},
 	});
 
 	if (!token || !email) return;
 
 	return (
-		<form onSubmit={safeSubmit}>
-			{errors.root && (
-				<div className="callout">
-					<p>{errors.root}</p>
-				</div>
-			)}
+		<Form {...form} onSubmit={handleSubmit}>
+			<FormField id="userEmail" name="userEmail">
+				<Label>Email</Label>
+				<Input type="email" autoComplete="email" />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="userEmail">Email</label>
-				<input
-					type="email"
-					id="userEmail"
-					name="userEmail"
-					autoComplete="email"
-					defaultValue={email}
-					autoFocus={true}
-				/>
-				<label htmlFor="userEmail">{errors.userEmail}</label>
-			</fieldset>
+			<FormField id="token" name="token">
+				<Label>Reset Token</Label>
+				<Input type="text" />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="token">Token</label>
-				<input
-					type="text"
-					id="token"
-					name="token"
-					autoComplete="off"
-					defaultValue={token}
-				/>
-				<label htmlFor="token">{errors.token}</label>
-			</fieldset>
+			<FormField id="password" name="password">
+				<Label>Password</Label>
+				<Input type="password" autoComplete="current-password" />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="password">Password</label>
-				<input
-					id="password"
-					name="password"
-					type="password"
-					autoComplete="current-password"
-				/>
-				<label htmlFor="password">{errors.password}</label>
-			</fieldset>
+			<FormField id="confirmPassword" name="confirmPassword">
+				<Label>Confirm Password</Label>
+				<Input type="password" autoComplete="off" />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="confirmPassword">Confirm Password</label>
-				<input
-					id="confirmPassword"
-					name="confirmPassword"
-					type="password"
-					autoComplete="off"
-				/>
-				<label htmlFor="confirmPassword">{errors.confirmPassword}</label>
-			</fieldset>
-
-			<button type="submit" className="primary w-full" disabled={isPending}>
-				{isPending ? "Loading..." : "Change Password"}
-			</button>
+			<Button variant="primary" className="w-full" type="submit" disabled={isPending}>
+				{isPending ? "Loading..." : "Register"}
+			</Button>
 
 			<small className="text-muted-foreground">Don&apos;t forget it this time...</small>
-		</form>
+		</Form>
 	);
 }

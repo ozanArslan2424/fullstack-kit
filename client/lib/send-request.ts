@@ -33,5 +33,3 @@ export async function sendRequest<T = any>(path: ServerRoutePath, options: Reque
 
 	return { res, data };
 }
-
-export type RequestReturn<T = any> = ReturnType<typeof sendRequest<T>>;

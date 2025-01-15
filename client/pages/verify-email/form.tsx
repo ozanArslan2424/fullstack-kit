@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useRequest } from "@//hooks/use-request";
 import { useRouter } from "@//hooks/use-router";
+import { Button } from "@/components/button";
+import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
 import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/generated/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
@@ -15,15 +17,19 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { safeSubmit, errors, isPending } = useRequestForm({
+	const { handleSubmit, form, isPending } = useRequestForm({
 		schema: verifyEmailPostSchema,
 		path: "/api/auth/verify-email",
-		options: { method: "POST" },
+		method: "POST",
 		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["profile"] });
 			toast.success("Email verified.");
 			router.push("/profile");
+		},
+		defaultValues: {
+			userEmail: email ?? "",
+			token: token ?? "",
 		},
 	});
 
@@ -47,51 +53,45 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	}
 
 	return (
-		<form onSubmit={safeSubmit}>
-			{errors.root && (
-				<div className="callout">
-					<p>{errors.root}</p>
-				</div>
-			)}
-
-			<fieldset>
-				<label htmlFor="userEmail">Email</label>
-				<input
+		<Form {...form} onSubmit={handleSubmit}>
+			<FormField id="userEmail" name="userEmail">
+				<Label>Email</Label>
+				<Input
 					type="email"
-					id="userEmail"
-					name="userEmail"
 					autoComplete="email"
 					autoFocus={true}
 					onChange={(e) => setEmail(e.target.value)}
-					value={emailState || ""}
 				/>
-				<label htmlFor="userEmail">{errors.userEmail}</label>
-			</fieldset>
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="token">Verification token</label>
-				<input type="text" id="token" name="token" defaultValue={token || ""} />
-				<label htmlFor="token">{errors.token}</label>
-			</fieldset>
+			<FormField id="token" name="token">
+				<Label>Verification token</Label>
+				<Input type="text" />
+				<ErrorMessage />
+			</FormField>
 
-			<button
+			<Button
 				type="submit"
-				className="primary w-full"
+				variant="primary"
+				className="w-full"
 				disabled={isPending || isPendingResend}
 			>
 				{isPending ? "Loading..." : "Verify Email"}
-			</button>
+			</Button>
 
-			<button
+			<Button
 				type="button"
-				className="sm ghost w-full"
+				variant="ghost"
+				size="sm"
+				className="w-full"
 				onClick={handleResend}
 				disabled={isPending || isPendingResend}
 			>
 				{isPendingResend
 					? "Loading..."
 					: "If you haven't received a token or link, enter your email and click here."}
-			</button>
-		</form>
+			</Button>
+		</Form>
 	);
 }

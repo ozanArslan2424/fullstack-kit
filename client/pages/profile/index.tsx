@@ -40,7 +40,10 @@ export function AboutCard({ profile }: { profile: ProfileData }) {
 					</Tooltip>
 				</p>
 			</div>
-			<time dateTime={profile.createdAt} className="text-muted-foreground">
+			<time
+				dateTime={timestamp.to.string(profile.createdAt)}
+				className="text-muted-foreground"
+			>
 				Joined on {timestamp.to.readable(profile.createdAt)}
 			</time>
 		</div>

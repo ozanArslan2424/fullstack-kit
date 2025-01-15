@@ -11,7 +11,7 @@
 
 	declare global {
 		
-	type ClientRoutePath = "/form" | "/verify-email" | "/register" | "/profile" | "/forgot-password" | "/" | "/change-password" | "/login";
+	type ClientRoutePath = "/verify-email" | "/register" | "/profile" | "/forgot-password" | "/" | "/change-password" | "/login";
 	type ClientRoutePathParam<P extends ClientRoutePath> = ExtractRouteParams<P>;
 	type ClientRouteSearchParam<P extends ClientRoutePath> = ExtractSearchParams<P>;
 		
@@ -21,7 +21,6 @@
 	}
 
 	export const clientRoutePaths:ClientRoutePath[] = [
-  "/form",
   "/verify-email",
   "/register",
   "/profile",
@@ -72,10 +71,6 @@
   {
     "path": "/api/auth/verify-email",
     "method": "POST"
-  },
-  {
-    "path": "/form",
-    "method": "PAGE"
   },
   {
     "path": "/verify-email",

@@ -14,6 +14,7 @@
         "pino": "^9.6.0",
         "pino-pretty": "^13.0.0",
         "stoker": "^1.4.2",
+        "timescape": "^0.7.1",
         "watcher": "^2.3.1",
         "zod": "^3.24.1",
       },
@@ -294,6 +295,8 @@
     "supports-color": ["supports-color@8.1.1", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q=="],
 
     "thread-stream": ["thread-stream@3.1.0", "", { "dependencies": { "real-require": "^0.2.0" } }, "sha512-OqyPZ9u96VohAyMfJykzmivOrY2wfMSf3C5TtFJVgN+Hm6aj+voFhlK+kZEIv2FBh1X6Xp3DlnCOfEQ3B2J86A=="],
+
+    "timescape": ["timescape@0.7.1", "", { "peerDependencies": { "@preact/signals": "1.x", "preact": "10.x", "react": ">=17", "react-dom": ">=17", "solid-js": ">=1", "svelte": "3.x", "vue": "3.x" }, "optionalPeers": ["@preact/signals", "preact", "react", "react-dom", "solid-js", "svelte", "vue"] }, "sha512-v80kXaQ7a1QpgZoR1Sh81qmkGweR4gS80VZiOpRc0sYROOUbT2DDdd5PxynJs2v8NXtgyPCXQNjigf6je5hqgQ=="],
 
     "tiny-readdir": ["tiny-readdir@2.7.4", "", { "dependencies": { "promise-make-counter": "^1.0.2" } }, "sha512-721U+zsYwDirjr8IM6jqpesD/McpZooeFi3Zc6mcjy1pse2C+v19eHPFRqz4chGXZFw7C3KITDjAtHETc2wj7Q=="],
 

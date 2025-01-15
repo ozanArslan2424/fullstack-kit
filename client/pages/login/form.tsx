@@ -1,6 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "@//hooks/use-router";
+import { Button } from "@/components/button";
+import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
 import { loginPostSchema } from "@/generated/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
@@ -8,10 +10,10 @@ export function LoginForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { safeSubmit, errors, isPending } = useRequestForm({
+	const { form, handleSubmit, isPending } = useRequestForm({
 		schema: loginPostSchema,
 		path: "/api/auth/login",
-		options: { method: "POST" },
+		method: "POST",
 		onError: ({ message }) => toast.error(message),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -20,33 +22,22 @@ export function LoginForm() {
 	});
 
 	return (
-		<form onSubmit={safeSubmit}>
-			{errors.root && (
-				<div className="callout">
-					<p>{errors.root}</p>
-				</div>
-			)}
+		<Form {...form} onSubmit={handleSubmit}>
+			<FormField id="email" name="email">
+				<Label>Email</Label>
+				<Input type="email" autoComplete="email" autoFocus={true} />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="email">Email</label>
-				<input id="email" name="email" type="email" autoComplete="email" autoFocus={true} />
-				<label htmlFor="email">{errors.email}</label>
-			</fieldset>
+			<FormField id="password" name="password">
+				<Label>Password</Label>
+				<Input type="password" autoComplete="current-password" />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="password">Password</label>
-				<input
-					id="password"
-					name="password"
-					type="password"
-					autoComplete="current-password"
-				/>
-				<label htmlFor="password">{errors.password}</label>
-			</fieldset>
-
-			<button type="submit" className="primary w-full" disabled={isPending}>
+			<Button type="submit" variant="primary" className="w-full" disabled={isPending}>
 				{isPending ? "Loading..." : "Login"}
-			</button>
-		</form>
+			</Button>
+		</Form>
 	);
 }

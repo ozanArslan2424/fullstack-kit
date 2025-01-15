@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router";
 import { ErrorPage } from "./_error";
 import { ChangePasswordPage } from "./change-password";
 import { ForgotPasswordPage } from "./forgot-password";
-import { FormTestPage } from "./form";
 import { LoginPage } from "./login";
 import { ProfilePage } from "./profile";
 import { RegisterPage } from "./register";
@@ -22,8 +21,6 @@ export const router = createBrowserRouter([
 			{ path: "/forgot-password", Component: ForgotPasswordPage },
 			{ path: "/change-password", Component: ChangePasswordPage },
 			{ path: "/verify-email", Component: VerifyEmailPage },
-
-			{ path: "/form", Component: FormTestPage },
 		],
 	},
 ]);

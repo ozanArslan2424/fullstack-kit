@@ -1,32 +1,34 @@
 import { toast } from "sonner";
+import { Button } from "@/components/button";
+import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
 import { forgotPasswordPostSchema } from "@/generated/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
 export function ForgotPasswordForm() {
-	const { safeSubmit, errors, isPending } = useRequestForm({
+	const { handleSubmit, form, isPending } = useRequestForm({
 		schema: forgotPasswordPostSchema,
 		path: "/api/auth/forgot-password",
-		options: { method: "POST" },
+		method: "POST",
 		onError: ({ message }) => toast.error(message),
 	});
 
 	return (
-		<form onSubmit={safeSubmit}>
-			{errors.root && (
-				<div className="callout">
-					<p>{errors.root}</p>
-				</div>
-			)}
+		<Form {...form} onSubmit={handleSubmit}>
+			<FormField id="email" name="email">
+				<Label>Email</Label>
+				<Input type="email" autoComplete="email" autoFocus={true} />
+				<ErrorMessage />
+			</FormField>
 
-			<fieldset>
-				<label htmlFor="email">Email</label>
-				<input type="email" id="email" name="email" autoComplete="email" autoFocus={true} />
-				<label htmlFor="email">{errors.email}</label>
-			</fieldset>
+			<FormField id="password" name="password">
+				<Label>Password</Label>
+				<Input type="password" autoComplete="current-password" />
+				<ErrorMessage />
+			</FormField>
 
-			<button type="submit" className="primary w-full" disabled={isPending}>
+			<Button type="submit" variant="primary" className="w-full" disabled={isPending}>
 				{isPending ? "Loading..." : "Send Reset Email"}
-			</button>
-		</form>
+			</Button>
+		</Form>
 	);
 }
