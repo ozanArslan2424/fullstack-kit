@@ -1,3 +1,4 @@
+import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,11 @@ function ThemeSwitch() {
 
 	if (!mounted) return <button type="button" disabled />;
 
-	return <button onClick={toggleTheme}>{resolvedTheme}</button>;
+	return (
+		<button onClick={toggleTheme}>
+			{resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+		</button>
+	);
 }
 
 export { ThemeSwitch };
