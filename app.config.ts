@@ -9,17 +9,17 @@ export default defineAppConfig({
 		ignoredPrefixes: ["_"],
 		indexRouteDirName: "root",
 
-		outFile: "/client/generated/routes.ts",
+		outFile: "/client/config/routes.ts",
 	},
 	db: {
 		drizzleOutFolder: "/db/drizzle-out",
 		tableSourceFile: "/db/table.ts",
 		zodSourceFile: "/db/zod.ts",
-		outFile: "/client/generated/zod.ts",
+		outFile: "/client/config/zod.ts",
 	},
 	metadata: {
 		title: "Bun Hono React Kit",
 		description: "A starter kit for building web apps.",
-		outFile: "/client/generated/metadata.ts",
+		outFile: "/client/config/metadata.ts",
 	},
 });

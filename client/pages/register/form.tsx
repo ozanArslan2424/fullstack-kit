@@ -14,7 +14,7 @@ export function RegisterForm() {
 		path: "/api/auth/register",
 		method: "POST",
 		schema: registerPostSchema,
-		onError: console.error,
+		onError: ({ message }) => toast.error(message),
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: "profile" });
 			router.push("/profile");
