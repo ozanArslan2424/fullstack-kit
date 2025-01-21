@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
 import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
-import { changePasswordPostSchema } from "@/generated/zod";
+import { changePasswordPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 import { sendRequest } from "@/lib/send-request";
 

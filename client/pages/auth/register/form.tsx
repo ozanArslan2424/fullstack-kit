@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/button";
 import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
-import { registerPostSchema } from "@/generated/zod";
+import { registerPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 import { useRouter } from "@/hooks/use-router";
 

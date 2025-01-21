@@ -1,10 +1,10 @@
-import { metadata } from "@/generated/metadata";
-import { router } from "@/pages/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { Toaster } from "sonner";
+import { router } from "@/routes";
+import { metadata } from "./config/metadata";
 import "./styles.css";
 
 const rootElement = document.getElementById("root")!;
@@ -19,7 +19,9 @@ if (rootElement.innerHTML) {
 
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(rootElement).render(
+const root = ReactDOM.createRoot(rootElement);
+
+root.render(
 	<>
 		<title>{metadata.title}</title>
 		<meta name="description" content={metadata.description} />

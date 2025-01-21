@@ -1,25 +1,18 @@
-import { defineAppConfig } from "./scripts/define-config";
+import { defineGeneratorConfig } from "@/scripts/define-config";
 
-export default defineAppConfig({
-	routes: {
-		clientSourceFolder: "/client/pages",
-		clientRouteFileName: "index.tsx",
-		serverSourceFolder: "/server/routes",
-		serverBasePath: "/api",
-		ignoredPrefixes: ["_"],
-		indexRouteDirName: "root",
-
-		outFile: "/client/config/routes.ts",
-	},
-	db: {
-		drizzleOutFolder: "/db/drizzle-out",
-		tableSourceFile: "/db/table.ts",
-		zodSourceFile: "/db/zod.ts",
-		outFile: "/client/config/zod.ts",
-	},
+export default defineGeneratorConfig({
 	metadata: {
-		title: "Bun Hono React Kit",
-		description: "A starter kit for building web apps.",
-		outFile: "/client/config/metadata.ts",
+		title: "Bun Hono Vite React Kit",
+		description: "A starter kit for building fullstack applications.",
+	},
+	watchedFiles: {
+		zodFile: "db/zod.ts",
+		serverEntryFile: "server/index.ts",
+		clientPathsFile: "client/routes/paths.ts",
+	},
+	outFiles: {
+		zod: "client/config/zod.ts",
+		metadata: "client/config/metadata.ts",
+		routeTypes: "client/config/route-gen.ts",
 	},
 });

@@ -30,7 +30,7 @@ const docOpts = {
 	},
 };
 
-const app = createRouter();
+export const app = createRouter();
 app.notFound(notFound);
 app.onError(onError);
 app.use(serveEmojiFavicon("🔥"));
@@ -45,7 +45,9 @@ app.get("/api/admin/ref", apiReference(refOpts));
 app.get("*", serveStatic({ root: "/dist" }));
 app.get("*", serveStatic({ path: "/dist/index.html" }));
 
+// log.clear();
 log.start("🚀 Let's go!");
+
 export default {
 	fetch: app.fetch,
 	port: Number(env.PORT) || 3000,

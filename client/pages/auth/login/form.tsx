@@ -1,15 +1,24 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
 import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
-import { forgotPasswordPostSchema } from "@/generated/zod";
+import { loginPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
-export function ForgotPasswordForm() {
-	const { handleSubmit, form, isPending } = useRequestForm({
-		schema: forgotPasswordPostSchema,
-		path: "/api/auth/forgot-password",
+export function LoginForm() {
+	const router = useRouter();
+	const queryClient = useQueryClient();
+
+	const { form, handleSubmit, isPending } = useRequestForm({
+		schema: loginPostSchema,
+		path: "/api/auth/login",
 		method: "POST",
 		onError: ({ message }) => toast.error(message),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["profile"] });
+			router.push("/");
+		},
 	});
 
 	return (
@@ -27,7 +36,7 @@ export function ForgotPasswordForm() {
 			</FormField>
 
 			<Button type="submit" variant="primary" className="w-full" disabled={isPending}>
-				{isPending ? "Loading..." : "Send Reset Email"}
+				{isPending ? "Loading..." : "Login"}
 			</Button>
 		</Form>
 	);

@@ -6,7 +6,7 @@ import { useRequest } from "@//hooks/use-request";
 import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
 import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
-import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/generated/zod";
+import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
 type VerifyEmailResendPostValues = z.infer<typeof verifyEmailResendPostSchema>;
