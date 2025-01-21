@@ -10,16 +10,22 @@ export function LoginForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { form, handleSubmit, isPending } = useRequestForm({
-		schema: loginPostSchema,
-		path: "/api/auth/login",
-		method: "POST",
-		onError: ({ message }) => toast.error(message),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ["profile"] });
-			router.push("/");
+	const { form, handleSubmit, isPending } = useRequestForm(
+		{
+			schema: loginPostSchema,
 		},
-	});
+		{
+			path: "/api/auth/login",
+			method: "POST",
+		},
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["profile"] });
+				router.push("/");
+			},
+			onError: ({ message }) => toast.error(message),
+		},
+	);
 
 	return (
 		<Form {...form} onSubmit={handleSubmit}>

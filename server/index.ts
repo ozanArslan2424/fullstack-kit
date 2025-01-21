@@ -33,7 +33,7 @@ const docOpts = {
 export const app = createRouter();
 app.notFound(notFound);
 app.onError(onError);
-app.use(serveEmojiFavicon("🔥"));
+app.use(serveEmojiFavicon("🚀"));
 app.use(requestId());
 app.use(logger());
 app.use(authCheck);
@@ -45,7 +45,7 @@ app.get("/api/admin/ref", apiReference(refOpts));
 app.get("*", serveStatic({ root: "/dist" }));
 app.get("*", serveStatic({ path: "/dist/index.html" }));
 
-// log.clear();
+log.clear();
 log.start("🚀 Let's go!");
 
 export default {

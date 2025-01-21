@@ -1,12 +1,38 @@
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
-export type RequestOptions = Omit<RequestInit, "method"> & {
-	method?: RequestMethod;
+export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
 	params?: ServerRoutePathParam<ServerRoutePath>;
 	search?: ServerRouteSearchParam<ServerRoutePath>;
 };
 
-export async function sendRequest<T = any>(path: ServerRoutePath, options: RequestOptions = {}) {
+async function handleRes<TReturn extends Record<string, string> = { message: string }>(
+	fetch: Promise<Response>,
+) {
+	const res = await fetch;
+	const data = (await res.json()) as TReturn;
+
+	const contentType = res.headers.get("Content-Type");
+
+	if (!contentType || !contentType.includes("application/json")) {
+		throw new TypeError("Oops, we haven't got JSON!");
+	}
+
+	if (!res.ok) {
+		const error = (data && data.message) || res.statusText;
+		return Promise.reject(error);
+	}
+
+	return data;
+}
+
+export async function sendRequest<TValues = void>(
+	path: ServerRoutePath,
+	method: RequestMethod,
+	values: TValues,
+	options: RequestOptions = {
+		headers: { "Content-Type": "application/json" },
+	},
+) {
 	const { params, search, ...rest } = options;
 	let url: string = path;
 
@@ -28,8 +54,9 @@ export async function sendRequest<T = any>(path: ServerRoutePath, options: Reque
 		}
 	}
 
-	const res = await fetch(url, rest);
-	const data = (await res.json()) as T;
-
-	return { res, data };
+	return fetch(url, {
+		...rest,
+		method,
+		body: JSON.stringify(values),
+	});
 }
