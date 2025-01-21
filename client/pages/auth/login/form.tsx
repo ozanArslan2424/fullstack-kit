@@ -11,16 +11,12 @@ export function LoginForm() {
 	const queryClient = useQueryClient();
 
 	const { form, handleSubmit, isPending } = useRequestForm(
-		{
-			schema: loginPostSchema,
-		},
+		{ schema: loginPostSchema },
 		{
 			path: "/api/auth/login",
 			method: "POST",
-		},
-		{
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: ["profile"] });
+				queryClient.invalidateQueries({ queryKey: "profile" });
 				router.push("/");
 			},
 			onError: ({ message }) => toast.error(message),
@@ -28,7 +24,7 @@ export function LoginForm() {
 	);
 
 	return (
-		<Form {...form} onSubmit={handleSubmit}>
+		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="email" name="email">
 				<Label>Email</Label>
 				<Input type="email" autoComplete="email" autoFocus={true} />

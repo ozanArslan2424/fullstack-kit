@@ -41,5 +41,5 @@ export function useRequest<TValues = void, TData = any>({
 		},
 	});
 
-	return { mutate, isPending };
+	return { mutate: (values: TValues) => mutate(values), isPending };
 }

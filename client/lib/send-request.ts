@@ -28,7 +28,7 @@ async function handleRes<TReturn extends Record<string, string> = { message: str
 export async function sendRequest<TValues = void>(
 	path: ServerRoutePath,
 	method: RequestMethod,
-	values: TValues,
+	values?: TValues,
 	options: RequestOptions = {
 		headers: { "Content-Type": "application/json" },
 	},
@@ -57,6 +57,6 @@ export async function sendRequest<TValues = void>(
 	return fetch(url, {
 		...rest,
 		method,
-		body: JSON.stringify(values),
+		body: values ? JSON.stringify(values) : undefined,
 	});
 }

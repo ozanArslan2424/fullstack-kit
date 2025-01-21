@@ -10,20 +10,22 @@ export function RegisterForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { form, handleSubmit, isPending } = useRequestForm({
-		path: "/api/auth/register",
-		method: "POST",
-		schema: registerPostSchema,
-		onError: ({ message }) => toast.error(message),
-		onSuccess: (data) => {
-			queryClient.invalidateQueries({ queryKey: "profile" });
-			router.push("/profile");
-			toast.success("Account created successfully");
+	const { form, handleSubmit, isPending } = useRequestForm(
+		{ schema: registerPostSchema },
+		{
+			path: "/api/auth/register",
+			method: "POST",
+			onError: ({ message }) => toast.error(message),
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({ queryKey: "profile" });
+				router.push("/profile");
+				toast.success("Account created successfully");
+			},
 		},
-	});
+	);
 
 	return (
-		<Form {...form} onSubmit={handleSubmit}>
+		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="name" name="name">
 				<Label>Username</Label>
 				<Input type="text" autoComplete="username" autoFocus={true} />

@@ -11,12 +11,10 @@ export function useRequestForm<TValues extends FieldValues, TData = any>(
 	request: {
 		path: ServerRoutePath;
 		method: RequestMethod;
-	} & RequestOptions,
-	response: {
 		onSuccess?: (data: TData) => void;
 		onError?: (error: Error) => void;
 		onElse?: (values: TValues) => void;
-	},
+	} & RequestOptions,
 ) {
 	const { schema, ...formRest } = form;
 
@@ -25,12 +23,11 @@ export function useRequestForm<TValues extends FieldValues, TData = any>(
 		resolver: zodResolver(schema),
 	});
 
-	const { path, method, ...requestRest } = request;
-	const { onSuccess, onError, onElse } = response;
+	const { path, method, onSuccess, onError, onElse, ...requestRest } = request;
 
 	const { mutate, isPending } = useMutation<TData, Error, TValues>({
 		mutationFn: async (values) => {
-			const res = await sendRequest(path, method, values, { ...requestRest });
+			const res = await sendRequest<TValues>(path, method, values, { ...requestRest });
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.message);
 			return data;

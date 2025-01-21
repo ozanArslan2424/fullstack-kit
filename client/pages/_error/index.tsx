@@ -14,7 +14,7 @@ export function ErrorPage() {
 						This means the page you were looking for does not exist.
 					</p>
 
-					<Link className="button primary mt-4 mb-8 w-full" to="/">
+					<Link className="button primary mb-8 mt-4 w-full" to="/">
 						Go back to the home page
 					</Link>
 				</div>
@@ -28,7 +28,7 @@ export function ErrorPage() {
 				<h1>This is the error page</h1>
 				<p className="text-muted-foreground">I'm sorry you landed here...</p>
 
-				<Link className="button primary mt-4 mb-8 w-full" to="/">
+				<Link className="button primary mb-8 mt-4 w-full" to="/">
 					Go back to the home page
 				</Link>
 

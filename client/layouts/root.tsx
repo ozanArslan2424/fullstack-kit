@@ -14,10 +14,10 @@ export function TopLayout() {
 
 	const { mutate } = useRequest({
 		path: "/api/auth/logout",
-		options: { method: "POST" },
+		method: "POST",
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["profile"] });
-			router.push("/login");
+			router.push("/auth/login");
 		},
 	});
 

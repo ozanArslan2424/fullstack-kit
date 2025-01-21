@@ -17,26 +17,30 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const { handleSubmit, form, isPending } = useRequestForm({
-		schema: verifyEmailPostSchema,
-		path: "/api/auth/verify-email",
-		method: "POST",
-		onError: ({ message }) => toast.error(message),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ["profile"] });
-			toast.success("Email verified.");
-			router.push("/profile");
+	const { handleSubmit, form, isPending } = useRequestForm(
+		{
+			schema: verifyEmailPostSchema,
+			defaultValues: {
+				userEmail: email ?? "",
+				token: token ?? "",
+			},
 		},
-		defaultValues: {
-			userEmail: email ?? "",
-			token: token ?? "",
+		{
+			path: "/api/auth/verify-email",
+			method: "POST",
+			onError: ({ message }) => toast.error(message),
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({ queryKey: ["profile"] });
+				toast.success("Email verified.");
+				router.push("/profile");
+			},
 		},
-	});
+	);
 
 	const { mutate: mutateResend, isPending: isPendingResend } =
 		useRequest<VerifyEmailResendPostValues>({
 			path: "/api/auth/verify-email-resend",
-			options: { method: "POST" },
+			method: "POST",
 			onError: ({ message }) => toast.error(message),
 			onSuccess: () => toast.success("Verification email sent."),
 		});
@@ -53,7 +57,7 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	}
 
 	return (
-		<Form {...form} onSubmit={handleSubmit}>
+		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="userEmail" name="userEmail">
 				<Label>Email</Label>
 				<Input

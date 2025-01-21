@@ -5,15 +5,17 @@ import { forgotPasswordPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
 export function ForgotPasswordForm() {
-	const { handleSubmit, form, isPending } = useRequestForm({
-		schema: forgotPasswordPostSchema,
-		path: "/api/auth/forgot-password",
-		method: "POST",
-		onError: ({ message }) => toast.error(message),
-	});
+	const { handleSubmit, form, isPending } = useRequestForm(
+		{ schema: forgotPasswordPostSchema },
+		{
+			path: "/api/auth/forgot-password",
+			method: "POST",
+			onError: ({ message }) => toast.error(message),
+		},
+	);
 
 	return (
-		<Form {...form} onSubmit={handleSubmit}>
+		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="email" name="email">
 				<Label>Email</Label>
 				<Input type="email" autoComplete="email" autoFocus={true} />

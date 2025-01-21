@@ -18,33 +18,34 @@ export function ChangePasswordForm() {
 
 	useEffect(() => {
 		if (!token || !email) {
-			router.push("/forgot-password");
+			router.push("/auth/forgot-password");
 		}
 	}, [token, email, router]);
 
-	const { form, handleSubmit, isPending } = useRequestForm({
-		schema: changePasswordPostSchema,
-		path: "/api/auth/change-password",
-		method: "POST",
-		onError: ({ message }) => toast.error(message),
-		onSuccess: async () => {
-			toast.success("Password changed.");
-			await sendRequest("/api/auth/logout", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-			});
-			router.push("/login");
+	const { form, handleSubmit, isPending } = useRequestForm(
+		{
+			schema: changePasswordPostSchema,
+			defaultValues: {
+				userEmail: email ?? "",
+				token: token ?? "",
+			},
 		},
-		defaultValues: {
-			userEmail: email ?? "",
-			token: token ?? "",
+		{
+			path: "/api/auth/change-password",
+			method: "POST",
+			onSuccess: async () => {
+				toast.success("Password changed.");
+				await sendRequest("/api/auth/logout", "POST");
+				router.push("/auth/login");
+			},
+			onError: ({ message }) => toast.error(message),
 		},
-	});
+	);
 
 	if (!token || !email) return;
 
 	return (
-		<Form {...form} onSubmit={handleSubmit}>
+		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="userEmail" name="userEmail">
 				<Label>Email</Label>
 				<Input type="email" autoComplete="email" />

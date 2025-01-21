@@ -4,7 +4,7 @@ import { type ProfileData, useGuard } from "@//hooks/use-guard";
 import { timestamp } from "@/lib/timestamp";
 
 export function ProfilePage() {
-	const profile = useGuard("logged-in", "/login");
+	const profile = useGuard("logged-in", "/auth/login");
 
 	if (!profile) return;
 
