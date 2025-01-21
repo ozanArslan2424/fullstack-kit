@@ -12,7 +12,6 @@ type InputType =
 	| "search"
 	| "tel"
 	| "url"
-	| "range"
 	| "color"
 	| "date"
 	| "time"
@@ -93,6 +92,7 @@ export function Input({ className, type, startIcon, endIcon, ...rest }: InputPro
 			})}
 		>
 			{startIcon}
+
 			<input
 				{...register(name)}
 				{...rest}
@@ -103,6 +103,7 @@ export function Input({ className, type, startIcon, endIcon, ...rest }: InputPro
 					type === "file" && "text-muted-foreground italic",
 				)}
 			/>
+
 			{endIcon}
 		</div>
 	);

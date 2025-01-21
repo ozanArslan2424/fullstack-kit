@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 const buttonVariants = {
 	outline: "text-foreground hover:bg-muted/10 active:bg-muted/5 border-primary/20 bg-transparent",
-	ghost: "text-foreground hover:bg-muted/10 active:bg-muted/5 border-transparent bg-transparent",
+	ghost: "text-foreground hover:bg-muted/40 active:bg-muted/20 border-transparent bg-transparent",
 	primary:
 		"border-primary bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80",
 	secondary:
@@ -17,9 +17,9 @@ const buttonVariants = {
 };
 
 const buttonSizes = {
-	sm: "gap-1.5 rounded-md px-3.5 py-2 text-sm",
-	md: "h-11 gap-2 rounded-lg px-4 py-2 text-base",
-	lg: "h-14 gap-3 rounded-md px-6 py-2 text-base",
+	sm: "gap-3 rounded-md px-3 py-1.5 text-sm",
+	md: "h-11 gap-3 rounded-lg px-4 py-2 text-base",
+	lg: "h-14 gap-4 rounded-md px-6 py-2 text-base",
 	icon: "aspect-square p-2 min-w-8 min-h-8 rounded-sm text-sm overflow-clip shrink-0",
 	icon_md: "aspect-square w-11 h-11 rounded-md overflow-clip shrink-0",
 	icon_lg: "aspect-square w-14 h-14 rounded-lg overflow-clip shrink-0",

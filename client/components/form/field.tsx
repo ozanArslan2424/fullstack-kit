@@ -1,11 +1,6 @@
 import { createContext, useContext, useId } from "react";
-import {
-	FieldErrors,
-	FieldValues,
-	UseFormRegister,
-	UseFormSetValue,
-	useFormContext,
-} from "react-hook-form";
+import { FieldErrors, UseFormRegister, useFormContext } from "react-hook-form";
+import type { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/cn";
 
 const FormFieldContext = createContext<{
@@ -13,7 +8,6 @@ const FormFieldContext = createContext<{
 	name: string;
 	register: UseFormRegister<FieldValues>;
 	errors: FieldErrors<FieldValues>;
-	setValue: UseFormSetValue<FieldValues>;
 } | null>(null);
 
 export function useField() {
@@ -45,11 +39,10 @@ export function FormField({
 	const {
 		formState: { errors },
 		register,
-		setValue,
 	} = formContext;
 
 	return (
-		<FormFieldContext.Provider value={{ id: id || genId, name, errors, register, setValue }}>
+		<FormFieldContext.Provider value={{ id: id || genId, name, errors, register }}>
 			<fieldset className={cn("w-full space-y-1", className)}>{children}</fieldset>
 		</FormFieldContext.Provider>
 	);

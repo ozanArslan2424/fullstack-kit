@@ -1,43 +1,28 @@
 import { ComponentProps } from "react";
-import {
-	FieldValues,
-	FormProvider,
-	FormProviderProps,
-	SubmitHandler,
-	useFormContext,
-} from "react-hook-form";
+import { FieldValues, FormProvider, FormProviderProps, SubmitHandler } from "react-hook-form";
 import { cn } from "@/lib/cn";
 
 type FormProps<T extends FieldValues> = {
+	form: Omit<FormProviderProps<T>, "children">;
 	onSubmit: SubmitHandler<T>;
-	className?: string;
-} & FormProviderProps<T>;
+} & Omit<ComponentProps<"form">, "onSubmit">;
 
 export function Form<T extends FieldValues>({
-	children,
 	className,
 	onSubmit,
+	form,
+	children,
 	...rest
 }: FormProps<T>) {
 	return (
-		<FormProvider {...rest}>
-			<FormElement className={className} onSubmit={onSubmit}>
+		<FormProvider {...form}>
+			<form
+				{...rest}
+				onSubmit={form.handleSubmit(onSubmit)}
+				className={cn("space-y-4", className)}
+			>
 				{children}
-			</FormElement>
+			</form>
 		</FormProvider>
-	);
-}
-
-function FormElement<T extends FieldValues>({
-	className,
-	onSubmit,
-	...rest
-}: Omit<ComponentProps<"form">, "onSubmit"> & {
-	onSubmit: SubmitHandler<T>;
-}) {
-	const { handleSubmit } = useFormContext<T>();
-
-	return (
-		<form {...rest} onSubmit={handleSubmit(onSubmit)} className={cn("space-y-4", className)} />
 	);
 }
