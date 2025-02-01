@@ -2,8 +2,6 @@ import { ZodError, z } from "zod";
 
 const envSchema = z.object({
 	NODE_ENV: z.string().default("development"),
-	APP_NAME: z.string(),
-	PORT: z.coerce.number().default(3000),
 	LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]),
 	BASE_URL: z.string(),
 	EMAIL_HOST: z.string(),
