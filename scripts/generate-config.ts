@@ -9,7 +9,6 @@ const zodOutFile = join(cwd, config.outFiles.zod);
 const watchedServerFile = join(cwd, config.watchedFiles.serverEntryFile);
 const watchedClientFile = join(cwd, config.watchedFiles.clientPathsFile);
 const watchedZodFile = join(cwd, config.watchedFiles.zodFile);
-const watchedConfigFile = join(cwd, "app.config.ts");
 
 let serverRoutes: string[] = [];
 let clientRoutes: string[] = [];
@@ -90,32 +89,6 @@ async function watchZod(path: string, onChange: (content: string) => void) {
 	return content;
 }
 
-async function watchMetadata(path: string, onChange: (content: string) => void) {
-	async function getContents() {
-		const cacheKey = require.resolve("@/app.config.ts");
-		if (cacheKey && require.cache[cacheKey]) {
-			delete require.cache[cacheKey];
-		}
-		const module = await import("@/app.config");
-
-		return JSON.stringify(module.default.metadata, null, 2);
-	}
-
-	let content = await getContents();
-
-	watchFile(path, async (curr, prev) => {
-		if (curr.mtime !== prev.mtime) {
-			content =
-				"// Auto-generated file. Do not edit.\n" +
-				"export const metadata = " +
-				(await getContents());
-			onChange(content);
-		}
-	});
-
-	return content;
-}
-
 function genContent() {
 	const serverGlobalTypes = `
 type ServerRoutePath = ${[...serverRoutes].map((path) => `"${path}"`).join(" | ")};
@@ -168,13 +141,8 @@ watchZod(watchedZodFile, (content) => {
 	Bun.write(zodOutFile, content);
 });
 
-watchMetadata(watchedConfigFile, (content) => {
-	Bun.write(join(cwd, "client/config/metadata.ts"), content);
-});
-
 process.on("SIGINT", () => {
 	unwatchFile(watchedServerFile);
 	unwatchFile(watchedClientFile);
 	unwatchFile(watchedZodFile);
-	unwatchFile(watchedConfigFile);
 });

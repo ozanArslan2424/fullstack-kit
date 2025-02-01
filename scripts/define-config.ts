@@ -1,8 +1,4 @@
 const defaultConfig = {
-	metadata: {
-		title: "Bun Hono Vite React Kit",
-		description: "A starter kit for building fullstack applications.",
-	},
 	watchedFiles: {
 		zodFile: "db/zod.ts",
 		serverEntryFile: "server/index.ts",

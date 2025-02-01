@@ -4,7 +4,6 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { Toaster } from "sonner";
 import { router } from "@/routes";
-import { metadata } from "./config/metadata";
 import "./styles.css";
 
 const rootElement = document.getElementById("root")!;
@@ -23,8 +22,7 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
 	<>
-		<title>{metadata.title}</title>
-		<meta name="description" content={metadata.description} />
+		<title>Bun Hono Vite React Kit</title>
 
 		<ThemeProvider attribute="class" enableSystem defaultTheme="system">
 			<QueryClientProvider client={queryClient}>
