@@ -1,6 +1,6 @@
-import { XCircleIcon } from "lucide-react";
-import { Tooltip } from "@//components/tooltip";
-import { type ProfileData, useGuard } from "@//hooks/use-guard";
+import { Iconify } from "@/components/iconify";
+import { Tooltip } from "@/components/modal/tooltip";
+import { type ProfileData, useGuard } from "@/hooks/use-guard";
 import { timestamp } from "@/lib/timestamp";
 
 export function ProfilePage() {
@@ -36,7 +36,11 @@ export function AboutCard({ profile }: { profile: ProfileData }) {
 				<p className="flex items-center gap-2">
 					{profile.email}
 					<Tooltip tip={profile.emailVerified ? "Email verified" : "Email not verified"}>
-						{!profile.emailVerified && <XCircleIcon size={14} className="text-error" />}
+						{!profile.emailVerified ? (
+							<Iconify icon="lucide:circle-x" className="text-error" />
+						) : (
+							<Iconify icon="lucide:circle-check" className="text-success" />
+						)}
 					</Tooltip>
 				</p>
 			</div>

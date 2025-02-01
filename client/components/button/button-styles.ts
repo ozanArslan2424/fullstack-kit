@@ -1,7 +1,7 @@
-import { ComponentProps } from "react";
 import { cn } from "@/lib/cn";
+import type { ButtonStyleProps } from "./types";
 
-const buttonVariants = {
+export const buttonVariants = {
 	outline: "text-foreground hover:bg-muted/10 active:bg-muted/5 border-primary/20 bg-transparent",
 	ghost: "text-foreground hover:bg-muted/40 active:bg-muted/20 border-transparent bg-transparent",
 	primary:
@@ -16,7 +16,7 @@ const buttonVariants = {
 	error: "border-error bg-error text-error-foreground hover:bg-error/90 active:bg-error/80",
 };
 
-const buttonSizes = {
+export const buttonSizes = {
 	sm: "gap-3 rounded-md px-3 py-1.5 text-sm",
 	md: "h-11 gap-3 rounded-lg px-4 py-2 text-base",
 	lg: "h-14 gap-4 rounded-md px-6 py-2 text-base",
@@ -28,15 +28,8 @@ const buttonSizes = {
 	circle_lg: "aspect-square w-14 h-14 rounded-full overflow-clip shrink-0",
 };
 
-export type ButtonStyleProps = {
-	variant?: keyof typeof buttonVariants;
-	size?: keyof typeof buttonSizes;
-	className?: string;
-};
-export type ButtonProps = {} & Omit<ComponentProps<"button">, "className"> & ButtonStyleProps;
-
-export const buttonStyles = ({ variant = "outline", size = "md", className }: ButtonStyleProps) =>
-	cn(
+export function buttonStyles({ variant = "outline", size = "md", className }: ButtonStyleProps) {
+	return cn(
 		"inline-flex items-center justify-center",
 		"disabled:bg-muted/50 disabled:text-muted-foreground shrink-0 cursor-pointer border font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:border-transparent",
 		"focus-visible:ring-ring transition focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
@@ -45,7 +38,4 @@ export const buttonStyles = ({ variant = "outline", size = "md", className }: Bu
 		buttonSizes[size],
 		className,
 	);
-
-export function Button({ variant = "outline", size = "md", className, ...rest }: ButtonProps) {
-	return <button {...rest} className={buttonStyles({ variant, size, className })} />;
 }

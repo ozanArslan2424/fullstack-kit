@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
-import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
+import { Field } from "@/components/fields";
+import { Form } from "@/components/form";
 import { changePasswordPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 import { sendRequest } from "@/lib/send-request";
@@ -46,29 +47,29 @@ export function ChangePasswordForm() {
 
 	return (
 		<Form form={form} onSubmit={handleSubmit}>
-			<FormField id="userEmail" name="userEmail">
-				<Label>Email</Label>
-				<Input type="email" autoComplete="email" />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="userEmail" name="userEmail">
+				<Field.Label>Email</Field.Label>
+				<Field.Input type="email" autoComplete="email" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<FormField id="token" name="token">
-				<Label>Reset Token</Label>
-				<Input type="text" />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="token" name="token">
+				<Field.Label>Reset Token</Field.Label>
+				<Field.Input type="text" autoComplete="off" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<FormField id="password" name="password">
-				<Label>Password</Label>
-				<Input type="password" autoComplete="current-password" />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="password" name="password">
+				<Field.Label>Password</Field.Label>
+				<Field.Input type="password" autoComplete="current-password" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<FormField id="confirmPassword" name="confirmPassword">
-				<Label>Confirm Password</Label>
-				<Input type="password" autoComplete="off" />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="confirmPassword" name="confirmPassword">
+				<Field.Label>Confirm Password</Field.Label>
+				<Field.Input type="password" autoComplete="off" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
 			<Button variant="primary" className="w-full" type="submit" disabled={isPending}>
 				{isPending ? "Loading..." : "Register"}

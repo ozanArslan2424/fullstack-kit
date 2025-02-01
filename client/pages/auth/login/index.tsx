@@ -12,13 +12,13 @@ export function LoginPage() {
 
 			<div className="flex flex-col gap-2">
 				<Link
-					to="/forgot-password"
+					to="/auth/forgot-password"
 					className="text-muted-foreground hover:text-foreground transition-colors"
 				>
 					Forgot password?
 				</Link>
 				<Link
-					to="/register"
+					to="/auth/register"
 					className="text-muted-foreground hover:text-foreground transition-colors"
 				>
 					Don&apos;t have an account? Register here.

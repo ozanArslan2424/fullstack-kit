@@ -1,21 +1,23 @@
 import { Link as DOMLink, NavLink as DOMNavLink } from "react-router";
 import type { LinkProps as DOMLinkProps, NavLinkProps as DOMNavLinkProps } from "react-router";
 
-type TypedLinkProps =
-	| ({
-			variant?: "regular";
-			to: ClientRoutePath;
-			params?: ClientRoutePathParam<ClientRoutePath>;
-			search?: ClientRouteSearchParam<ClientRoutePath>;
-			hash?: string;
-	  } & Omit<DOMLinkProps, "to">)
-	| ({
-			variant?: "nav";
-			to: ClientRoutePath;
-			params?: ClientRoutePathParam<ClientRoutePath>;
-			search?: ClientRouteSearchParam<ClientRoutePath>;
-			hash?: string;
-	  } & Omit<DOMNavLinkProps, "to">);
+export type TypedRegularLinkProps = {
+	variant?: "regular";
+	to: ClientRoutePath;
+	params?: ClientRoutePathParam<ClientRoutePath>;
+	search?: ClientRouteSearchParam<ClientRoutePath>;
+	hash?: string;
+} & Omit<DOMLinkProps, "to">;
+
+export type TypedNavLinkProps = {
+	variant?: "nav";
+	to: ClientRoutePath;
+	params?: ClientRoutePathParam<ClientRoutePath>;
+	search?: ClientRouteSearchParam<ClientRoutePath>;
+	hash?: string;
+} & Omit<DOMNavLinkProps, "to">;
+
+export type TypedLinkProps = TypedRegularLinkProps | TypedNavLinkProps;
 
 export function Link({ variant = "regular", to, params, search, hash, ...rest }: TypedLinkProps) {
 	let href: string = to;

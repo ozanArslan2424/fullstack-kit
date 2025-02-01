@@ -23,6 +23,9 @@
 		--error-foreground: var(--color-stone-50);
 		--muted: var(--color-stone-200);
 		--muted-foreground: var(--color-stone-600);
+
+		--modal: var(--color-stone-200);
+		--modal-foreground: var(--color-stone-950);
 	}
 	.dark {
 		--background: oklch(18% 0.005 195);
@@ -43,8 +46,12 @@
 		--error-foreground: var(--color-stone-50);
 		--muted: var(--color-stone-700);
 		--muted-foreground: var(--color-stone-400);
+
+		--modal: var(--color-stone-900);
+		--modal-foreground: var(--color-stone-50);
 	}
 }
+
 @theme {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -64,6 +71,9 @@
 	--color-error-foreground: var(--error-foreground);
 	--color-muted: var(--muted);
 	--color-muted-foreground: var(--muted-foreground);
+
+	--color-modal: var(--modal);
+	--color-modal-foreground: var(--modal-foreground);
 
 	--radius-lg: 0.5rem;
 	--radius-md: calc(0.5rem - 2px);

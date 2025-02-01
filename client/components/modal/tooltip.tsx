@@ -17,7 +17,7 @@ export function Tooltip({ tip, tipProps, className, ...rest }: TooltipProps) {
 				<TooltipPrimitive.Content
 					className={cn(
 						tipProps?.className,
-						"bg-background text-foreground animate-in fade-in-0 zoom-in-95 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-sm shadow-md",
+						"bg-modal text-modal-foreground animate-in fade-in-0 zoom-in-95 z-50 overflow-hidden rounded-md border px-3 py-2 text-sm shadow-lg",
 						"data-[state=closed]:animate-out",
 						"data-[state=closed]:fade-out-0",
 						"data-[state=closed]:zoom-out-95",

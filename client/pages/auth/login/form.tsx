@@ -2,7 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
-import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
+import { Field } from "@/components/fields";
+import { Form } from "@/components/form";
 import { loginPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
@@ -25,17 +26,17 @@ export function LoginForm() {
 
 	return (
 		<Form form={form} onSubmit={handleSubmit}>
-			<FormField id="email" name="email">
-				<Label>Email</Label>
-				<Input type="email" autoComplete="email" autoFocus={true} />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="email" name="email">
+				<Field.Label>Email</Field.Label>
+				<Field.Input type="email" autoComplete="email" autoFocus={true} />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<FormField id="password" name="password">
-				<Label>Password</Label>
-				<Input type="password" autoComplete="current-password" />
-				<ErrorMessage />
-			</FormField>
+			<Field.Provider id="password" name="password">
+				<Field.Label>Password</Field.Label>
+				<Field.Input type="password" autoComplete="current-password" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
 			<Button type="submit" variant="primary" className="w-full" disabled={isPending}>
 				{isPending ? "Loading..." : "Login"}

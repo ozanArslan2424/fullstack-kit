@@ -1,54 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { Button, buttonStyles } from "./button";
-import { Popover } from "./popover";
-
-type PaginationOptions<T> = {
-	data: T[] | undefined;
-	sortBy: (a: T, b: T) => number;
-	contentLimit: number;
-	pageButtonLimit: number;
-};
-
-export function usePagination<T>({
-	data,
-	contentLimit,
-	pageButtonLimit,
-	sortBy,
-}: PaginationOptions<T>) {
-	const [currentPage, setCurrentPage] = useState(1);
-
-	const currentPageContents = useMemo(() => {
-		if (!data) return [];
-		return data
-			.slice((currentPage - 1) * contentLimit, currentPage * contentLimit)
-			.sort(sortBy);
-	}, [data, currentPage, contentLimit, sortBy]);
-
-	const buttons = useMemo(() => {
-		if (!data) return [];
-		return Array.from({ length: Math.ceil(data.length / contentLimit) }, (_, i) => i + 1);
-	}, [data, contentLimit]);
-
-	const prev = useCallback(() => setCurrentPage((p) => (p === 1 ? p : p - 1)), [setCurrentPage]);
-	const goto = useCallback((page: number) => setCurrentPage(page), [setCurrentPage]);
-	const next = useCallback(() => {
-		if (!data) return;
-		return setCurrentPage((p) => (p === Math.ceil(data.length / contentLimit) ? p : p + 1));
-	}, [setCurrentPage]);
-
-	return {
-		data,
-		contentLimit,
-		currentPage,
-		currentPageContents,
-		prev,
-		next,
-		goto,
-		buttons,
-		pageButtonLimit,
-	};
-}
+import { createContext, useContext } from "react";
+import { Button } from "../button";
+import { Iconify } from "../iconify";
+import { Popover, PopoverSlot } from "../modal/popover";
+import { usePagination } from "./use-pagination";
 
 const PaginationContext = createContext<ReturnType<typeof usePagination> | null>(null);
 
@@ -60,7 +14,7 @@ function usePaginationContext() {
 	return context;
 }
 
-export function PaginationProvider<T>({
+export function PaginationProvider({
 	children,
 	pagination,
 }: {
@@ -99,7 +53,7 @@ export function PaginationNextButton() {
 
 	return (
 		<PaginationButton onClick={next}>
-			<ChevronRightIcon size={14} />
+			<Iconify icon="lucide:chevrons-right" />
 		</PaginationButton>
 	);
 }
@@ -111,7 +65,7 @@ export function PaginationPrevButton({ showOnFirstPage = false }: { showOnFirstP
 
 	return (
 		<PaginationButton onClick={prev}>
-			<ChevronLeftIcon size={14} />
+			<Iconify icon="lucide:chevrons-left" />
 		</PaginationButton>
 	);
 }
@@ -144,19 +98,18 @@ export function PaginationMorePopover({
 	if (showConditionally && buttons.length <= pageButtonLimit) return null;
 
 	return (
-		<Popover
-			trigger={{
-				className: buttonStyles({
-					className: "data-[state=open]:border-ring data-[state=open]:border-2",
-					size: "circle",
-				}),
-				children: <MoreHorizontalIcon size={14} />,
-			}}
-			content={{
-				align: "end",
-				side: "bottom",
-				className: "grid grid-cols-4 gap-2",
-				children: buttons.map((page) => (
+		<Popover>
+			<PopoverSlot.Trigger>
+				<Button
+					size="circle"
+					className="data-[state=open]:border-ring data-[state=open]:border-2"
+				>
+					<Iconify icon="lucide:more-vertical" />
+				</Button>
+			</PopoverSlot.Trigger>
+
+			<PopoverSlot.Content align="end" side="bottom" className="grid grid-cols-4 gap-2">
+				{buttons.map((page) => (
 					<PaginationButton
 						key={page}
 						active={currentPage === page}
@@ -164,8 +117,8 @@ export function PaginationMorePopover({
 					>
 						{page}
 					</PaginationButton>
-				)),
-			}}
-		/>
+				))}
+			</PopoverSlot.Content>
+		</Popover>
 	);
 }

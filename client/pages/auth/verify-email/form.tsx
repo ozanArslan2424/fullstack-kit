@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useRequest } from "@//hooks/use-request";
 import { useRouter } from "@//hooks/use-router";
 import { Button } from "@/components/button";
-import { ErrorMessage, Form, FormField, Input, Label } from "@/components/form";
+import { ErrorMessageField, Form, FormField, InputField, LabelField } from "@/components/form";
 import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/config/zod";
 import { useRequestForm } from "@/hooks/use-req-form";
 
@@ -59,20 +59,20 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 	return (
 		<Form form={form} onSubmit={handleSubmit}>
 			<FormField id="userEmail" name="userEmail">
-				<Label>Email</Label>
-				<Input
+				<LabelField>Email</LabelField>
+				<InputField
 					type="email"
 					autoComplete="email"
 					autoFocus={true}
 					onChange={(e) => setEmail(e.target.value)}
 				/>
-				<ErrorMessage />
+				<ErrorMessageField />
 			</FormField>
 
 			<FormField id="token" name="token">
-				<Label>Verification token</Label>
-				<Input type="text" />
-				<ErrorMessage />
+				<LabelField>Verification token</LabelField>
+				<InputField type="text" />
+				<ErrorMessageField />
 			</FormField>
 
 			<Button

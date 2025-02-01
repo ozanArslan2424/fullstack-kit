@@ -12,7 +12,7 @@ export function RegisterPage() {
 
 			<div>
 				<Link
-					to="/login"
+					to="/auth/login"
 					className="text-muted-foreground hover:text-foreground transition-colors"
 				>
 					Already have an account? Login here.
