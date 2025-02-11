@@ -1,5 +1,5 @@
-import { Link } from "@//components/link";
-import { useGuard } from "@//hooks/use-guard";
+import { Link } from "@/components/link";
+import { useGuard } from "@/hooks/use-guard";
 import { RegisterForm } from "./form";
 
 export function RegisterPage() {
@@ -11,10 +11,7 @@ export function RegisterPage() {
 			<RegisterForm />
 
 			<div>
-				<Link
-					to="/auth/login"
-					className="text-muted-foreground hover:text-foreground transition-colors"
-				>
+				<Link to="/auth/login" className="text-muted-foreground hover:text-foreground transition-colors">
 					Already have an account? Login here.
 				</Link>
 			</div>

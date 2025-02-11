@@ -21,7 +21,7 @@ export function DefaultDialog({
 				<DialogPrimitive.Overlay className={overlayClassName} />
 				<DialogPrimitive.Content className={contentClassName(className)} {...rest}>
 					<div className="flex flex-col gap-1.5 text-left">
-						<DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
+						<DialogPrimitive.Title className="text-lg leading-none font-semibold tracking-tight">
 							{title}
 						</DialogPrimitive.Title>
 						<DialogPrimitive.Description className="text-muted-foreground text-sm">

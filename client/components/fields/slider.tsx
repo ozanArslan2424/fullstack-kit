@@ -4,17 +4,7 @@ import { useField } from "./provider";
 import { inputStyles } from "./styles/input-styles";
 import type { SliderProps } from "./types";
 
-export function Slider({
-	className,
-	value,
-	onChange,
-	isError,
-	id,
-	name,
-	min,
-	max,
-	...rest
-}: SliderProps) {
+export function Slider({ className, value, onChange, isError, id, name, min, max, ...rest }: SliderProps) {
 	const [internalValue, setInternalValue] = useState(rest.defaultValue || value);
 
 	const fieldContext = useField();

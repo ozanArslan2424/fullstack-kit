@@ -4,9 +4,10 @@
  * Date time picker Docs: {@link: https://shadcn-extension.vercel.app/docs/otp-input}
  * Timescape Docs: {@link: https://github.com/dan-lee/timescape?tab=readme-ov-file}
  */
-import { ComponentProps, Fragment, useCallback, useState } from "react";
-import { useTimescape } from "timescape/react";
 import { timestamp } from "@/lib/timestamp";
+import type { ComponentProps } from "react";
+import { Fragment, useCallback, useState } from "react";
+import { useTimescape } from "timescape/react";
 import { Iconify } from "../iconify";
 import { useField } from "./provider";
 import { dateGroupInputStyles, datetimePickerStyles } from "./styles/datetime-picker-styles";
@@ -89,16 +90,12 @@ export function DatetimePicker({
 									/>
 
 									{unitIndex < group.length - 1 && (
-										<span className="text-muted-foreground text-xs">
-											{groupIndex === 0 ? "/" : ":"}
-										</span>
+										<span className="text-muted-foreground text-xs">{groupIndex === 0 ? "/" : ":"}</span>
 									)}
 								</Fragment>
 							))}
 
-						{format[1]?.length && !groupIndex && (
-							<span className="text-muted-foreground text-xl opacity-30">|</span>
-						)}
+						{format[1]?.length && !groupIndex && <span className="text-muted-foreground text-xl opacity-30">|</span>}
 					</Fragment>
 				))}
 		</div>

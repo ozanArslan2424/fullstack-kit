@@ -1,6 +1,6 @@
-import { ComponentProps } from "react";
-import { labelStyles } from "./styles/label-styles";
+import type { ComponentProps } from "react";
 import { useField } from "./provider";
+import { labelStyles } from "./styles/label-styles";
 
 type ErrorMessageProps = Omit<ComponentProps<"label">, "children"> & {
 	message?: string;
@@ -29,7 +29,5 @@ export function Label({ className, htmlFor, ...rest }: ComponentProps<"label">) 
 		htmlFor = fieldContext.id;
 	}
 
-	return (
-		<label {...rest} htmlFor={htmlFor} className={labelStyles({ className, isError: false })} />
-	);
+	return <label {...rest} htmlFor={htmlFor} className={labelStyles({ className, isError: false })} />;
 }

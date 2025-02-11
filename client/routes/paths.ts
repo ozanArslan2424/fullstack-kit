@@ -1,6 +1,9 @@
 export const paths = {
 	root: "/",
-	profile: "/profile",
+	protected: {
+		profile: "/profile",
+		dashboard: "/dash",
+	},
 	auth: {
 		login: "/auth/login",
 		register: "/auth/register",

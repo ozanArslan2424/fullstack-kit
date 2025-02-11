@@ -1,3 +1,5 @@
+import type { ZodType } from "zod";
+
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
 export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
@@ -5,9 +7,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
 	search?: ServerRouteSearchParam<ServerRoutePath>;
 };
 
-async function handleRes<TReturn extends Record<string, string> = { message: string }>(
-	fetch: Promise<Response>,
-) {
+async function handleRes<TReturn extends Record<string, string> = { message: string }>(fetch: Promise<Response>) {
 	const res = await fetch;
 	const data = (await res.json()) as TReturn;
 
@@ -28,18 +28,16 @@ async function handleRes<TReturn extends Record<string, string> = { message: str
 export async function sendRequest<TValues = void>(
 	path: ServerRoutePath,
 	method: RequestMethod,
-	values?: TValues,
 	options: RequestOptions = {
 		headers: { "Content-Type": "application/json" },
 	},
+	values?: TValues,
 ) {
 	const { params, search, ...rest } = options;
 	let url: string = path;
 
 	if (params) {
-		for (const key of Object.keys(params) as Array<
-			keyof ServerRoutePathParam<ServerRoutePath>
-		>) {
+		for (const key of Object.keys(params) as Array<keyof ServerRoutePathParam<ServerRoutePath>>) {
 			url = url.replace(`:${key}`, params[key]);
 		}
 	}
@@ -59,4 +57,52 @@ export async function sendRequest<TValues = void>(
 		method,
 		body: values ? JSON.stringify(values) : undefined,
 	});
+}
+
+type RequestInitType<TValues> = {
+	path: ServerRoutePath;
+	params?: ServerRoutePathParam<ServerRoutePath>;
+	search?: ServerRouteSearchParam<ServerRoutePath>;
+	method: RequestMethod;
+	schema?: ZodType<TValues>;
+	body?: unknown;
+	cache?: RequestCache;
+	credentials?: RequestCredentials;
+	headers?: HeadersInit;
+	integrity?: string;
+	keepalive?: boolean;
+	mode?: RequestMode;
+	redirect?: RequestRedirect;
+	referrer?: string;
+	referrerPolicy?: ReferrerPolicy;
+	signal?: AbortSignal;
+	priority?: RequestPriority;
+};
+
+export async function request<TValues = { message: string }>(init: RequestInitType<TValues>) {
+	const { path, params, search, schema, body, ...rest } = init;
+
+	let url: string = path;
+
+	if (params) {
+		for (const key of Object.keys(params) as Array<keyof ServerRoutePathParam<ServerRoutePath>>) {
+			url = url.replace(`:${key}`, params[key]);
+		}
+	}
+	if (search) {
+		const searchParams = new URLSearchParams();
+		Object.entries(search as Record<string, string>).forEach(([key, value]) => {
+			searchParams.append(key, value);
+		});
+		const searchString = searchParams.toString();
+		if (searchString) {
+			url = `${url}${url.includes("?") ? "&" : "?"}${searchString}`;
+		}
+	}
+
+	const reqBody = body ? JSON.stringify(body) : undefined;
+	const res = await fetch(url, { body: reqBody, ...rest });
+	const data = await res.json();
+	const parsed = schema ? schema.parse(data) : data;
+	return { data: parsed as TValues, res };
 }

@@ -1,6 +1,6 @@
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import type { ComponentProps, ReactNode } from "react";
 
 export function Popover({ children, ...rest }: ComponentProps<typeof PopoverPrimitive.Root>) {
 	return <PopoverPrimitive.Root {...rest}>{children}</PopoverPrimitive.Root>;

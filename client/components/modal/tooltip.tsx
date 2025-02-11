@@ -1,6 +1,6 @@
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import type { ComponentProps, ReactNode } from "react";
 
 type TooltipContentProps = ComponentProps<typeof TooltipPrimitive.Content>;
 

@@ -1,16 +1,9 @@
 import { cn } from "@/lib/cn";
 import { useField } from "./provider";
 import { inputStyles } from "./styles/input-styles";
-import { TextareaProps } from "./types";
+import type { TextareaProps } from "./types";
 
-export function Textarea({
-	id,
-	name,
-	resize = "auto",
-	isError,
-	className,
-	...rest
-}: TextareaProps) {
+export function Textarea({ id, name, resize = "auto", isError, className, ...rest }: TextareaProps) {
 	const fieldContext = useField();
 
 	const fieldId = fieldContext?.id || id || "";

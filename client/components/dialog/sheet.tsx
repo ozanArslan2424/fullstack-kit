@@ -30,17 +30,15 @@ export function SheetDialog({
 					{...props}
 				>
 					<div className="flex flex-col gap-4 pb-4">
-						<DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-wide">
+						<DialogPrimitive.Title className="text-lg leading-none font-semibold tracking-wide">
 							{title}
 						</DialogPrimitive.Title>
-						<DialogPrimitive.Description className="text-muted-foreground">
-							{description}
-						</DialogPrimitive.Description>
+						<DialogPrimitive.Description className="text-muted-foreground">{description}</DialogPrimitive.Description>
 					</div>
 					{children}
 					<DialogPrimitive.Close
 						className={
-							"default absolute right-2 top-2 aspect-square cursor-pointer rounded-none p-2 text-xs transition-all hover:opacity-70"
+							"default absolute top-2 right-2 aspect-square cursor-pointer rounded-none p-2 text-xs transition-all hover:opacity-70"
 						}
 					>
 						<Iconify icon="lucide:chevrons-left" />

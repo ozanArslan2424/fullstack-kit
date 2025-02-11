@@ -1,19 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import type { PaginationOptions } from "./types";
 
-export function usePagination<T>({
-	data,
-	contentLimit,
-	pageButtonLimit,
-	sortBy,
-}: PaginationOptions<T>) {
+export function usePagination<T>({ data, contentLimit, pageButtonLimit, sortBy }: PaginationOptions<T>) {
 	const [currentPage, setCurrentPage] = useState(1);
 
 	const currentPageContents = useMemo(() => {
 		if (!data) return [];
-		return data
-			.slice((currentPage - 1) * contentLimit, currentPage * contentLimit)
-			.sort(sortBy);
+		return data.slice((currentPage - 1) * contentLimit, currentPage * contentLimit).sort(sortBy);
 	}, [data, currentPage, contentLimit, sortBy]);
 
 	const buttons = useMemo(() => {

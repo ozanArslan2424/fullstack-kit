@@ -1,5 +1,5 @@
-import { ComponentProps, ReactNode } from "react";
-import { FieldValues, UseFormRegister } from "react-hook-form";
+import type { ComponentProps, ReactNode } from "react";
+import type { FieldValues, UseFormRegister } from "react-hook-form";
 import type { Options } from "timescape/react";
 
 export type FieldContextType = {
@@ -63,10 +63,7 @@ export type DatetimeInputProps = DefaultFieldProps & {
 	register?: ComponentProps<"input">;
 };
 
-export type DatetimeInputFieldProps = Omit<
-	DatetimeInputProps,
-	"id" | "name" | "defaultValue" | "isError"
->;
+export type DatetimeInputFieldProps = Omit<DatetimeInputProps, "id" | "name" | "defaultValue" | "isError">;
 
 export type SelectProps = {
 	options: { label: string; value: string }[];

@@ -23,9 +23,7 @@ export function Link({ variant = "regular", to, params, search, hash, ...rest }:
 	let href: string = to;
 
 	if (params) {
-		for (const key of Object.keys(params) as Array<
-			keyof ClientRoutePathParam<ClientRoutePath>
-		>) {
+		for (const key of Object.keys(params) as Array<keyof ClientRoutePathParam<ClientRoutePath>>) {
 			href = href.replace(`:${key}`, params[key]);
 		}
 	}

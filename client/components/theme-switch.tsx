@@ -17,11 +17,7 @@ function ThemeSwitch() {
 
 	return (
 		<Button size="icon" onClick={toggleTheme}>
-			{resolvedTheme === "dark" ? (
-				<Iconify icon="line-md:sunny" />
-			) : (
-				<Iconify icon="line-md:moon" />
-			)}
+			{resolvedTheme === "dark" ? <Iconify icon="line-md:sunny" /> : <Iconify icon="line-md:moon" />}
 		</Button>
 	);
 }

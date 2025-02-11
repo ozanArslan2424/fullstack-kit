@@ -13,7 +13,7 @@ export function Select({ id, name, className, isError, options, ...rest }: Selec
 
 	return (
 		<div className={selectStyles({ className, isError })}>
-			<span className="text-foreground pointer-events-none absolute right-3 top-[50%] z-10 -translate-y-[50%]">
+			<span className="text-foreground pointer-events-none absolute top-[50%] right-3 z-10 -translate-y-[50%]">
 				<Iconify icon="lucide:chevron-down" />
 			</span>
 			<select id={fieldId} name={fieldName} {...rest}>

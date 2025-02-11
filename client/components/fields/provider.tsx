@@ -1,7 +1,7 @@
+import { cn } from "@/lib/cn";
 import { createContext, useContext, useId } from "react";
 import { useFormContext } from "react-hook-form";
-import { cn } from "@/lib/cn";
-import { FieldContextType } from "./types";
+import type { FieldContextType } from "./types";
 
 const FieldContext = createContext<FieldContextType | null>(null);
 

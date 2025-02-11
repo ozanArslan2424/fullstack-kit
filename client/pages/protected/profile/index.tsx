@@ -37,17 +37,14 @@ export function AboutCard({ profile }: { profile: ProfileData }) {
 					{profile.email}
 					<Tooltip tip={profile.emailVerified ? "Email verified" : "Email not verified"}>
 						{!profile.emailVerified ? (
-							<Iconify icon="lucide:circle-x" className="text-error" />
+							<Iconify icon="lucide:circle-x" themeColor="error" />
 						) : (
-							<Iconify icon="lucide:circle-check" className="text-success" />
+							<Iconify icon="lucide:circle-check" themeColor="success" />
 						)}
 					</Tooltip>
 				</p>
 			</div>
-			<time
-				dateTime={timestamp.to.string(profile.createdAt)}
-				className="text-muted-foreground"
-			>
+			<time dateTime={timestamp.to.string(profile.createdAt)} className="text-muted-foreground">
 				Joined on {timestamp.to.readable(profile.createdAt)}
 			</time>
 		</div>

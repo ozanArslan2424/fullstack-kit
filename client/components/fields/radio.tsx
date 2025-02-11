@@ -65,13 +65,7 @@ export function RadioItem({
 				className="hidden"
 				readOnly
 			/>
-			<label
-				className={cn(
-					"flex items-center gap-3 px-1",
-					disabled && "text-muted-foreground",
-					wrapperClassName,
-				)}
-			>
+			<label className={cn("flex items-center gap-3 px-1", disabled && "text-muted-foreground", wrapperClassName)}>
 				<button
 					role="radio"
 					type="button"
@@ -80,7 +74,7 @@ export function RadioItem({
 					aria-checked={selected === value}
 					className={cn(
 						"ring-primary flex h-2.5 w-2.5 items-center justify-center rounded-full ring ring-offset-2 transition-colors",
-						"focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-4",
+						"focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none",
 						selected === value ? "ring-primary bg-primary" : "ring-muted",
 						disabled && "ring-muted",
 						fieldError && "ring-error",

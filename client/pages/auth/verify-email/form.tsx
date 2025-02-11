@@ -1,13 +1,14 @@
+import { Button } from "@/components/button";
+import { Field } from "@/components/fields";
+import { Form } from "@/components/form";
+import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/config/zod";
+import { useRequestForm } from "@/hooks/use-req-form";
+import { useRequest } from "@/hooks/use-request";
+import { useRouter } from "@/hooks/use-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useRequest } from "@//hooks/use-request";
-import { useRouter } from "@//hooks/use-router";
-import { Button } from "@/components/button";
-import { ErrorMessageField, Form, FormField, InputField, LabelField } from "@/components/form";
-import { verifyEmailPostSchema, verifyEmailResendPostSchema } from "@/config/zod";
-import { useRequestForm } from "@/hooks/use-req-form";
 
 type VerifyEmailResendPostValues = z.infer<typeof verifyEmailResendPostSchema>;
 
@@ -37,13 +38,12 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 		},
 	);
 
-	const { mutate: mutateResend, isPending: isPendingResend } =
-		useRequest<VerifyEmailResendPostValues>({
-			path: "/api/auth/verify-email-resend",
-			method: "POST",
-			onError: ({ message }) => toast.error(message),
-			onSuccess: () => toast.success("Verification email sent."),
-		});
+	const { mutate: mutateResend, isPending: isPendingResend } = useRequest<VerifyEmailResendPostValues>({
+		path: "/api/auth/verify-email-resend",
+		method: "POST",
+		onError: ({ message }) => toast.error(message),
+		onSuccess: () => toast.success("Verification email sent."),
+	});
 
 	async function handleResend(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		e.preventDefault();
@@ -58,29 +58,19 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 
 	return (
 		<Form form={form} onSubmit={handleSubmit}>
-			<FormField id="userEmail" name="userEmail">
-				<LabelField>Email</LabelField>
-				<InputField
-					type="email"
-					autoComplete="email"
-					autoFocus={true}
-					onChange={(e) => setEmail(e.target.value)}
-				/>
-				<ErrorMessageField />
-			</FormField>
+			<Field.Provider id="userEmail" name="userEmail">
+				<Field.Label>Email</Field.Label>
+				<Field.Input type="email" autoComplete="email" autoFocus={true} onChange={(e) => setEmail(e.target.value)} />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<FormField id="token" name="token">
-				<LabelField>Verification token</LabelField>
-				<InputField type="text" />
-				<ErrorMessageField />
-			</FormField>
+			<Field.Provider id="token" name="token">
+				<Field.Label>Verification token</Field.Label>
+				<Field.Input type="text" />
+				<Field.ErrorMessage />
+			</Field.Provider>
 
-			<Button
-				type="submit"
-				variant="primary"
-				className="w-full"
-				disabled={isPending || isPendingResend}
-			>
+			<Button type="submit" variant="primary" className="w-full" disabled={isPending || isPendingResend}>
 				{isPending ? "Loading..." : "Verify Email"}
 			</Button>
 
@@ -92,9 +82,7 @@ export function VerifyEmailForm({ email, token }: { email: string | null; token:
 				onClick={handleResend}
 				disabled={isPending || isPendingResend}
 			>
-				{isPendingResend
-					? "Loading..."
-					: "If you haven't received a token or link, enter your email and click here."}
+				{isPendingResend ? "Loading..." : "If you haven't received a token or link, enter your email and click here."}
 			</Button>
 		</Form>
 	);

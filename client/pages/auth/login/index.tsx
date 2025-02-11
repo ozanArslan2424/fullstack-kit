@@ -1,5 +1,5 @@
-import { Link } from "@//components/link";
-import { useGuard } from "@//hooks/use-guard";
+import { Link } from "@/components/link";
+import { useGuard } from "@/hooks/use-guard";
 import { LoginForm } from "./form";
 
 export function LoginPage() {
@@ -11,16 +11,10 @@ export function LoginPage() {
 			<LoginForm />
 
 			<div className="flex flex-col gap-2">
-				<Link
-					to="/auth/forgot-password"
-					className="text-muted-foreground hover:text-foreground transition-colors"
-				>
+				<Link to="/auth/forgot-password" className="text-muted-foreground hover:text-foreground transition-colors">
 					Forgot password?
 				</Link>
-				<Link
-					to="/auth/register"
-					className="text-muted-foreground hover:text-foreground transition-colors"
-				>
+				<Link to="/auth/register" className="text-muted-foreground hover:text-foreground transition-colors">
 					Don&apos;t have an account? Register here.
 				</Link>
 			</div>

@@ -34,12 +34,7 @@ function PaginationButton({
 	onClick: () => void;
 }) {
 	return (
-		<Button
-			type="button"
-			size="circle"
-			className={active ? "ring-ring ring-2" : ""}
-			onClick={onClick}
-		>
+		<Button type="button" size="circle" className={active ? "ring-ring ring-2" : ""} onClick={onClick}>
 			{children}
 		</Button>
 	);
@@ -76,11 +71,7 @@ export function PaginationNumberedButtons({ limit }: { limit?: number }) {
 	return (
 		<>
 			{buttons.slice(0, limit).map((page) => (
-				<PaginationButton
-					key={page}
-					active={currentPage === page}
-					onClick={() => goto(page)}
-				>
+				<PaginationButton key={page} active={currentPage === page} onClick={() => goto(page)}>
 					{page}
 				</PaginationButton>
 			))}
@@ -88,11 +79,7 @@ export function PaginationNumberedButtons({ limit }: { limit?: number }) {
 	);
 }
 
-export function PaginationMorePopover({
-	showConditionally = true,
-}: {
-	showConditionally?: boolean;
-}) {
+export function PaginationMorePopover({ showConditionally = true }: { showConditionally?: boolean }) {
 	const { currentPage, goto, buttons, pageButtonLimit } = usePaginationContext();
 
 	if (showConditionally && buttons.length <= pageButtonLimit) return null;
@@ -100,21 +87,14 @@ export function PaginationMorePopover({
 	return (
 		<Popover>
 			<PopoverSlot.Trigger>
-				<Button
-					size="circle"
-					className="data-[state=open]:border-ring data-[state=open]:border-2"
-				>
+				<Button size="circle" className="data-[state=open]:border-ring data-[state=open]:border-2">
 					<Iconify icon="lucide:more-vertical" />
 				</Button>
 			</PopoverSlot.Trigger>
 
 			<PopoverSlot.Content align="end" side="bottom" className="grid grid-cols-4 gap-2">
 				{buttons.map((page) => (
-					<PaginationButton
-						key={page}
-						active={currentPage === page}
-						onClick={() => goto(page)}
-					>
+					<PaginationButton key={page} active={currentPage === page} onClick={() => goto(page)}>
 						{page}
 					</PaginationButton>
 				))}

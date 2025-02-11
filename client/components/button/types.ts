@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { buttonSizes, buttonVariants } from "./button-styles";
 
 export type ButtonStyleProps = {
@@ -7,4 +7,4 @@ export type ButtonStyleProps = {
 	className?: string;
 };
 
-export type ButtonProps = {} & Omit<ComponentProps<"button">, "className"> & ButtonStyleProps;
+export type ButtonProps = Omit<ComponentProps<"button">, "className"> & ButtonStyleProps;

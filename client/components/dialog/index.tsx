@@ -1,12 +1,7 @@
 import { AlertDialog } from "./alert";
 import { DefaultDialog } from "./default";
 import { SheetDialog } from "./sheet";
-import type {
-	AlertDialogProps,
-	CombinedDialogProps,
-	DefaultDialogProps,
-	SheetDialogProps,
-} from "./types";
+import type { AlertDialogProps, CombinedDialogProps, DefaultDialogProps, SheetDialogProps } from "./types";
 
 export function Dialog({ variant = "dialog", ...rest }: CombinedDialogProps) {
 	if (variant === "sheet") {
