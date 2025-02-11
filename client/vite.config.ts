@@ -20,4 +20,7 @@ export default defineConfig({
 			"@": process.cwd(),
 		},
 	},
+	optimizeDeps: {
+		exclude: ["@iconify/react"],
+	},
 });

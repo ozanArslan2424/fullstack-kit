@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
-import { profileGetSchema } from "@/generated/zod";
+import { profileGetSchema } from "@/config/zod";
 import { useRouter } from "@/hooks/use-router";
 import { sendRequest } from "@/lib/send-request";
 

@@ -1,57 +1,55 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { DefaultValues, FieldValues, useForm as useReactHookForm } from "react-hook-form";
+import { FieldValues, UseFormProps, useForm as useReactHookForm } from "react-hook-form";
 import { ZodType } from "zod";
 import { RequestMethod, RequestOptions, sendRequest } from "@/lib/send-request";
 
-type Res<T> = Awaited<ReturnType<typeof sendRequest<T>>>["res"];
-type Data<T> = Awaited<ReturnType<typeof sendRequest<T>>>["data"];
+export function useRequestForm<TValues extends FieldValues, TData = any>(
+	form: {
+		schema: ZodType<TValues>;
+	} & UseFormProps<TValues>,
+	request: {
+		path: ServerRoutePath;
+		method: RequestMethod;
+		onSuccess?: (data: TData) => void;
+		onError?: (error: Error) => void;
+		onElse?: (values: TValues) => void;
+	} & RequestOptions,
+) {
+	const { schema, ...formRest } = form;
 
-export function useRequestForm<TValues extends FieldValues, TData = unknown>({
-	path,
-	schema,
-	method,
-	options,
-	onSuccess,
-	onError,
-	optimisticUpdate,
-	defaultValues,
-}: {
-	path: ServerRoutePath;
-	schema: ZodType<TValues>;
-	method: RequestMethod;
-	options?: RequestOptions;
-	onSuccess?: (data: Data<TData>, res: Res<TData>) => void;
-	onError?: "throw" | ((error: Error) => void);
-	optimisticUpdate?: (values: TValues) => void;
-	defaultValues?: DefaultValues<TValues> | undefined;
-}) {
-	const form = useReactHookForm<TValues>({
+	const formObj = useReactHookForm<TValues>({
+		...formRest,
 		resolver: zodResolver(schema),
-		defaultValues,
 	});
 
-	const { mutate, isPending } = useMutation({
-		mutationFn: (values) =>
-			sendRequest(path, {
-				method,
-				body: JSON.stringify(values),
-				headers: { "Content-Type": "application/json" },
-				...options,
-			}),
-		onSuccess: async ({ data, res }) => {
-			if (!res.ok) {
-				throw new Error((data as { message: string }).message);
-			}
-			onSuccess?.(data, res);
+	const { path, method, onSuccess, onError, onElse, ...requestRest } = request;
+
+	const { mutate, isPending } = useMutation<TData, Error, TValues>({
+		mutationFn: async (values) => {
+			const res = await sendRequest<TValues>(path, method, values, { ...requestRest });
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.message);
+			return data;
 		},
-		onError: onError === "throw" ? undefined : onError,
-		throwOnError: onError === "throw",
-		onMutate: optimisticUpdate,
+		onSettled: (data, error, values) => {
+			onElse?.(values);
+
+			if (error) {
+				console.error(`🔴 useRequest ${path} error: `, error);
+				onError?.(error);
+				return;
+			}
+
+			if (data) {
+				onSuccess?.(data);
+				return;
+			}
+		},
 	});
 
 	return {
-		form,
+		form: formObj,
 		handleSubmit: (values: TValues) => mutate(values),
 		isPending,
 	};

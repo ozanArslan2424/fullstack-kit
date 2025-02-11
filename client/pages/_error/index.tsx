@@ -1,6 +1,7 @@
+import { buttonStyles } from "@/components/button/button-styles";
+import { GenericError } from "@/components/generic-error";
+import { Link } from "@/components/link";
 import { isRouteErrorResponse, useRouteError } from "react-router";
-import { GenericError } from "@//components/generic-error";
-import { Link } from "@//components/link";
 
 export function ErrorPage() {
 	const error = useRouteError();
@@ -10,11 +11,9 @@ export function ErrorPage() {
 			<div className="mx-auto w-max p-28">
 				<div className="space-y-2">
 					<h1>This is the 404 page</h1>
-					<p className="text-muted-foreground">
-						This means the page you were looking for does not exist.
-					</p>
+					<p className="text-muted-foreground">This means the page you were looking for does not exist.</p>
 
-					<Link className="button primary mt-4 mb-8 w-full" to="/">
+					<Link to="/" className={buttonStyles({ variant: "primary", className: "mt-4 mb-8 w-full" })}>
 						Go back to the home page
 					</Link>
 				</div>
@@ -28,7 +27,7 @@ export function ErrorPage() {
 				<h1>This is the error page</h1>
 				<p className="text-muted-foreground">I'm sorry you landed here...</p>
 
-				<Link className="button primary mt-4 mb-8 w-full" to="/">
+				<Link to="/" className={buttonStyles({ variant: "primary", className: "mt-4 mb-8 w-full" })}>
 					Go back to the home page
 				</Link>
 

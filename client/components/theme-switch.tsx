@@ -1,7 +1,7 @@
-import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "./button";
+import { Iconify } from "./iconify";
 
 function ThemeSwitch() {
 	const [mounted, setMounted] = useState(false);
@@ -17,7 +17,7 @@ function ThemeSwitch() {
 
 	return (
 		<Button size="icon" onClick={toggleTheme}>
-			{resolvedTheme === "dark" ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+			{resolvedTheme === "dark" ? <Iconify icon="line-md:sunny" /> : <Iconify icon="line-md:moon" />}
 		</Button>
 	);
 }

@@ -1,10 +1,9 @@
-import { metadata } from "@/generated/metadata";
-import { router } from "@/pages/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { Toaster } from "sonner";
+import { router } from "@/routes";
 import "./styles.css";
 
 const rootElement = document.getElementById("root")!;
@@ -19,10 +18,11 @@ if (rootElement.innerHTML) {
 
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(rootElement).render(
+const root = ReactDOM.createRoot(rootElement);
+
+root.render(
 	<>
-		<title>{metadata.title}</title>
-		<meta name="description" content={metadata.description} />
+		<title>Bun Hono Vite React Kit</title>
 
 		<ThemeProvider attribute="class" enableSystem defaultTheme="system">
 			<QueryClientProvider client={queryClient}>

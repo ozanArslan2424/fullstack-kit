@@ -1,52 +1,35 @@
-import { ApiReferenceOptions, apiReference } from "@scalar/hono-api-reference";
+import { apiReference } from "@scalar/hono-api-reference";
 import { serveStatic } from "hono/bun";
 import { requestId } from "hono/request-id";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
-import pkg from "@/package.json";
 import { createRouter } from "@/server/lib/create-router";
-import { env } from "@/server/lib/env";
 import { log } from "@/server/lib/log";
+import { authCheck } from "@/server/middleware/auth-check";
 import { logger } from "@/server/middleware/pino-logger";
 import { authRoutes } from "@/server/routes/auth";
-import { authCheck } from "./middleware/auth-check";
+import { openapiConfig, uiConfig } from "@/server/scalar.config";
 
-const refOpts: ApiReferenceOptions = {
-	theme: "kepler",
-	layout: "classic",
-	defaultHttpClient: {
-		targetKey: "javascript",
-		clientKey: "fetch",
-	},
-	spec: {
-		url: "/api/admin/doc",
-	},
-};
+export const app = createRouter()
+	.doc("/admin/doc", openapiConfig)
+	.get("/admin/ref", apiReference(uiConfig))
 
-const docOpts = {
-	openapi: "3.0.0",
-	info: {
-		title: pkg.name,
-		version: pkg.version,
-	},
-};
+	.notFound(notFound)
+	.onError(onError)
+	.use(serveEmojiFavicon("🚀"))
+	.use(requestId())
+	.use(logger())
+	.use(authCheck)
 
-const app = createRouter();
-app.notFound(notFound);
-app.onError(onError);
-app.use(serveEmojiFavicon("🔥"));
-app.use(requestId());
-app.use(logger());
-app.use(authCheck);
+	.route("/api/auth", authRoutes)
 
-app.route("/api/auth", authRoutes);
-app.doc("/api/admin/doc", docOpts);
-app.get("/api/admin/ref", apiReference(refOpts));
+	.get("*", serveStatic({ root: "/dist" }))
+	.get("*", serveStatic({ path: "/dist/index.html" }));
 
-app.get("*", serveStatic({ root: "/dist" }));
-app.get("*", serveStatic({ path: "/dist/index.html" }));
-
+// * Start server
+log.clear();
 log.start("🚀 Let's go!");
+
 export default {
 	fetch: app.fetch,
-	port: Number(env.PORT) || 3000,
+	port: 3000,
 };
